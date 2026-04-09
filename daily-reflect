@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Daily Reflection System — wrapper script
+# Runs the pipeline in a nix-shell with all dependencies
+DIR="$(cd "$(dirname "$0")" && pwd)"
+exec nix-shell "$DIR/shell.nix" --run "python3 -m daily_reflect.main $*"
