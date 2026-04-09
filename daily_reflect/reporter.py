@@ -197,11 +197,17 @@ def _inject_table_rows(
                 empty_start = i
             empty_end = i
 
+    # Check if the new rows are already present (idempotent re-run)
+    first_new_line = new_rows.split("\n")[0].strip()
+    existing_data = "\n".join(after_lines[sep_idx + 1:last_table_row + 1])
+    if first_new_line and first_new_line in existing_data:
+        return content  # Already injected
+
     if empty_start is not None:
-        # Replace empty rows
+        # Replace empty rows with new data
         after_lines[empty_start:empty_end + 1] = [new_rows]
     else:
-        # Append after last data row
+        # Append after last data row (or separator if no data)
         after_lines.insert(last_table_row + 1, new_rows)
 
     return before + "\n".join(after_lines)
