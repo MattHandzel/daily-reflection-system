@@ -5,8 +5,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import NamedTuple
 
-LIFELOG_SCREEN_DIR = Path.home() / "lifelog" / "data" / "screen"
-LIFELOG_DB = Path.home() / "lifelog" / "data" / "index.db"
+from .config import LIFELOG_SCREEN_DIR, LIFELOG_DB
 
 
 class WindowEvent(NamedTuple):

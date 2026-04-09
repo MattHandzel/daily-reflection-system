@@ -2,4 +2,6 @@
 # Daily Reflection System — wrapper script
 # Runs the pipeline in a nix-shell with all dependencies
 DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+# Override Ollama URL if not set (default: Tailscale server)
+export DAILY_REFLECT_OLLAMA_URL="${DAILY_REFLECT_OLLAMA_URL:-http://100.118.206.104:11434/api/generate}"
 exec nix-shell "$DIR/shell.nix" --run "python3 -m daily_reflect.main $*"

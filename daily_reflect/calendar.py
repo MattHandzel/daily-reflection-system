@@ -6,10 +6,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
-# Google Calendar credentials
-CREDENTIALS_PATH = Path.home() / "secrets" / "gcal_client_secret.json"
-TOKEN_PATH = Path.home() / "secrets" / "gcal_token.json"
-
 
 @dataclass
 class CalendarEvent:

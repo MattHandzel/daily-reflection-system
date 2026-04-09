@@ -5,10 +5,8 @@ from datetime import datetime  # noqa: F401 - used in type hints
 from pathlib import Path
 
 from .calendar import CalendarEvent, format_calendar_table
+from .config import VAULT_DAILIES, REFLECTIONS_DIR
 from .timeline import TimeBlock, compute_category_totals, compute_deep_work_hours
-
-VAULT_DAILIES = Path.home() / "Obsidian" / "Main" / "dailies"
-REFLECTIONS_DIR = Path.home() / "Obsidian" / "Main" / "projects" / "daily-reflection-system" / "reflections"
 
 CATEGORY_LABELS = {
     "deep_work_coding": "Deep Work: Coding",

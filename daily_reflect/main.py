@@ -6,14 +6,13 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from .classifier import classify_screenshot, load_cache, save_cache, DEFAULT_MODEL
+from .classifier import classify_screenshot, load_cache, save_cache
 from .collector import collect_screenshots, collect_window_events, find_window_context
+from .config import CACHE_DIR, DEFAULT_MODEL
 from .dedup import dedup_screenshots, sample_at_interval
 from .timeline import build_timeline, compute_deep_work_hours
 from .calendar import fetch_calendar_events
 from .reporter import generate_reflection_file, inject_into_daily_note
-
-CACHE_DIR = Path.home() / "Projects" / "daily-reflection-system" / "cache"
 
 
 def main():

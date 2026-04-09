@@ -6,8 +6,7 @@ import subprocess
 from dataclasses import dataclass, asdict
 from pathlib import Path
 
-OLLAMA_URL = "http://100.118.206.104:11434/api/generate"
-DEFAULT_MODEL = "gemma3:4b-it-qat"
+from .config import OLLAMA_URL, DEFAULT_MODEL
 
 CATEGORIES = [
     "deep_work_coding",
