@@ -4,6 +4,8 @@ Reconstructs how you spent your day from lifelog screenshots using a local VLM. 
 
 Classifies screenshots into 12 activity categories, builds an activity timeline, pulls Google Calendar events, and populates your Obsidian daily note automatically.
 
+![Demo](demo/demo.gif)
+
 ## Quick Start
 
 ```bash
