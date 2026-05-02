@@ -91,7 +91,7 @@ Screenshots (10s intervals) → Dedup (dHash) → Sample (5min) → VLM Classify
 
 - **Nix** (dependencies managed via `shell.nix` — no pip needed)
 - **Lifelog screenshots** at `~/lifelog/data/screen/` (ISO-timestamp PNGs + thumbnails)
-- **Ollama** with a vision model (default: `gemma3:4b-it-qat`)
+- **Ollama** with a vision model (default: `gemma4:e2b`)
 - **Hyprland window log** (optional) at `~/lifelog/data/index.db` for disambiguation
 - **Google Calendar** OAuth credentials (optional) for Time Plan population
 
@@ -106,7 +106,7 @@ All paths are configurable via environment variables:
 | `DAILY_REFLECT_DAILIES_DIR` | `~/Obsidian/Main/dailies` | Obsidian daily notes directory |
 | `DAILY_REFLECT_REFLECTIONS_DIR` | `~/Obsidian/Main/.../reflections` | Reflection output directory |
 | `DAILY_REFLECT_OLLAMA_URL` | `http://localhost:11434/api/generate` | Ollama API endpoint |
-| `DAILY_REFLECT_MODEL` | `gemma3:4b-it-qat` | Ollama vision model |
+| `DAILY_REFLECT_MODEL` | `gemma4:e2b` | Ollama vision model |
 | `DAILY_REFLECT_GCAL_CREDENTIALS` | `~/secrets/gcal_client_secret.json` | Google Calendar OAuth client |
 | `DAILY_REFLECT_GCAL_TOKEN` | `~/Projects/.../token.json` | Google Calendar OAuth token |
 | `DAILY_REFLECT_CACHE_DIR` | `./cache` | Classification cache directory |
@@ -120,9 +120,17 @@ All paths are configurable via environment variables:
 | After sampling | ~96 frames (5-min intervals) |
 | First run | ~5 minutes (VLM inference) |
 | Cached re-run | ~17 seconds |
-| VLM speed | ~3s per image (RTX 3060, gemma3:4b) |
+| VLM speed | Depends on local model/GPU; `gemma4:e2b` is larger than the old `gemma3:4b-it-qat` default |
 
 Classification results are cached to `cache/{date}.json`. Re-runs skip already-classified frames.
+
+To test a different Ollama model without changing configuration, pass
+`--model`, for example:
+
+```bash
+./daily-reflect --today --model gemma3:4b-it-qat
+./daily-reflect --today --model gemma4:26b
+```
 
 ## Architecture
 
