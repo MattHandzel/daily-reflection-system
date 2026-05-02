@@ -30,7 +30,7 @@ OLLAMA_URL = os.environ.get(
 )
 DEFAULT_MODEL = os.environ.get(
     "DAILY_REFLECT_MODEL",
-    "gemma3:4b-it-qat",
+    "gemma4:e2b",
 )
 
 # Google Calendar
