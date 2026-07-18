@@ -28,19 +28,28 @@ cd daily-reflection-system
 
 ## How It Works
 
+The **hyprland window log is the backbone**; the VLM is an **enricher**.
+
 ```
-Screenshots (10s intervals) → Dedup (dHash) → Sample (5min) → VLM Classify → Timeline → Daily Note
+Window log (10s) → segment day by task → enrich each task with VLM (focused-monitor crop) → timeline + metrics → daily note
 ```
 
-1. Collects screenshots for the target date (04:00 to 04:00 boundary)
-2. Deduplicates near-identical frames using perceptual hashing (dHash)
-3. Samples at 5-minute intervals (~96 frames from ~3000 screenshots)
-4. Enriches with window manager context (title, class) for disambiguation
-5. Classifies each frame via local Ollama VLM into 12 activity categories
-6. Merges per-frame classifications into time blocks (min 2-minute duration)
-7. Pulls Google Calendar events into daily note's "Time Plan" table
-8. Populates daily note's "Time Log (actual)" with reconstructed timeline
-9. Generates standalone reflection file with category summary + deep work tracking
+1. Collects window events + screenshot frames for the day (configurable
+   timezone, `HH:00` boundary). Frames prefer full PNGs, fall back to thumbnails.
+2. **Segments** the day at every window focus change into minute-level task
+   segments; AFK gaps become breaks.
+3. For each distinct task, **enriches** one representative frame with the local
+   Ollama VLM (cropped to the focused monitor for multi-monitor captures),
+   labelling category + a task label; applies it to every segment of that task.
+   Frameless tasks fall back to a window-class heuristic.
+4. Builds the timeline + **per-task totals** and **task-switch metrics**
+   (switches/hour, mean focus streak, distinct tasks).
+5. Pulls Google Calendar (incl. Life Scheduler) into the note's "Time Plan".
+6. Injects the "Time Log (actual)" idempotently (HTML-marker replacement) and
+   writes a standalone reflection file.
+
+Runs are incremental: classifications are cached by `(model, prompt_version,
+frame)` and a watermark skips already-processed data. Errors are never cached.
 
 ## Output
 
@@ -97,45 +106,57 @@ Screenshots (10s intervals) → Dedup (dHash) → Sample (5min) → VLM Classify
 
 ## Configuration
 
-All paths are configurable via environment variables:
+Config is layered: **environment variable > `~/.config/daily-reflect/config.toml`
+> default** (override the file location with `DAILY_REFLECT_CONFIG`). Every key
+below has a matching TOML key (without the `DAILY_REFLECT_` prefix, lowercased).
 
 | Variable | Default | Description |
 |----------|---------|-------------|
+| `DAILY_REFLECT_TZ` | `America/Los_Angeles` | Timezone for the day boundary + displayed times (Berkeley now, `America/Chicago` at home) |
+| `DAILY_REFLECT_DAY_BOUNDARY_HOUR` | `4` | Local hour the day starts (covers late-night work) |
+| `DAILY_REFLECT_MODEL` | `gemma3:4b-it-qat` | Ollama vision model (also `--model`) |
+| `DAILY_REFLECT_PROMPT_VERSION` | `v2` | Bump to invalidate the cache on prompt changes |
+| `DAILY_REFLECT_CONCURRENCY` | `3` | Parallel VLM calls (also `--concurrency`) |
+| `DAILY_REFLECT_OLLAMA_URL` | `http://localhost:11434/api/generate` | Ollama API endpoint |
+| `DAILY_REFLECT_GCAL_CALENDARS` | `primary,<life-scheduler>` | Comma-separated calendar ids to pull |
 | `DAILY_REFLECT_SCREEN_DIR` | `~/lifelog/data/screen` | Screenshot directory |
 | `DAILY_REFLECT_DB` | `~/lifelog/data/index.db` | Hyprland window log SQLite DB |
 | `DAILY_REFLECT_DAILIES_DIR` | `~/Obsidian/Main/dailies` | Obsidian daily notes directory |
 | `DAILY_REFLECT_REFLECTIONS_DIR` | `~/Obsidian/Main/.../reflections` | Reflection output directory |
-| `DAILY_REFLECT_OLLAMA_URL` | `http://localhost:11434/api/generate` | Ollama API endpoint |
-| `DAILY_REFLECT_MODEL` | `gemma3:4b-it-qat` | Ollama vision model |
 | `DAILY_REFLECT_GCAL_CREDENTIALS` | `~/secrets/gcal_client_secret.json` | Google Calendar OAuth client |
-| `DAILY_REFLECT_GCAL_TOKEN` | `~/Projects/.../token.json` | Google Calendar OAuth token |
-| `DAILY_REFLECT_CACHE_DIR` | `./cache` | Classification cache directory |
+| `DAILY_REFLECT_GCAL_TOKEN` | `~/.local/share/universal-calendar-capture/token.json` | Google Calendar OAuth token |
+| `DAILY_REFLECT_CACHE_DIR` | `~/Projects/daily-reflection-system/cache` | Classification cache + watermark |
 
 ## Performance
 
-| Metric | Value |
-|--------|-------|
-| Screenshots/day | ~3,000 (captured every 10s) |
-| After dedup | ~1,100 unique frames |
-| After sampling | ~96 frames (5-min intervals) |
-| First run | ~5 minutes (VLM inference) |
-| Cached re-run | ~17 seconds |
-| VLM speed | ~3s per image (RTX 3060, gemma3:4b) |
+Measured on real data (RTX 3060, `gemma3:4b-it-qat`, concurrency 3):
 
-Classification results are cached to `cache/{date}.json`. Re-runs skip already-classified frames.
+| Metric | 2026-07-17 | 2026-07-03 (dual-monitor) |
+|--------|-----------|---------------------------|
+| Window events / frames | 4269 / 826 | 1394 / 1284 |
+| Task segments (active) | 318 | 161 |
+| Distinct tasks → VLM calls | 38 | 61 |
+| End-to-end | 155s | 383s |
+| Cached re-run | ~1s | ~1s |
+
+Grouping segments by task means ~40–60 VLM calls cover a whole day of hundreds
+of minute-level segments. Results cache to `cache/{date}.json` (keyed by model +
+prompt version); a watermark makes during-day re-runs incremental.
 
 ## Architecture
 
 ```
 daily_reflect/
-  config.py      — Environment-based configuration
-  collector.py   — Screenshot collection + Hyprland window data
-  dedup.py       — Perceptual hash dedup + temporal sampling
-  classifier.py  — Ollama VLM classification with structured output
-  timeline.py    — Merge per-frame classifications into time blocks
-  calendar.py    — Google Calendar event fetching
-  reporter.py    — Markdown generation + daily note injection
-  main.py        — CLI entry point
+  config.py      — Layered config (env > TOML > default); timezone, model, calendars
+  collector.py   — Window events + PNG-preferred frames; real-datetime matching
+  segmenter.py   — Backbone: cut the day into minute-level task segments
+  monitors.py    — Multi-monitor detect / crop / focused-pane selection
+  dedup.py       — Perceptual-hash utilities (robust to corrupt frames)
+  classifier.py  — Task-grouped parallel VLM enrichment + cache
+  timeline.py    — Display blocks, per-task totals, task-switch metrics
+  calendar.py    — Google Calendar (incl. Life Scheduler) via gcal_helper
+  reporter.py    — Reflection file + idempotent daily-note injection
+  main.py        — CLI orchestration + incremental watermark
 ```
 
 ## License

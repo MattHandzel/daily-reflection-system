@@ -1,16 +1,26 @@
 #!/usr/bin/env python3
-"""Helper script to fetch Google Calendar events.
+"""Fetch Google Calendar events across configured calendars.
 
-Isolated to avoid google-api-python-client as a core dependency.
-Outputs JSON to stdout.
+Isolated in its own script so google-api-python-client is only imported inside
+the nix-shell, not as a core dependency. All configuration comes from
+environment variables (set by ``daily_reflect.calendar``):
 
-Usage: python3 gcal_helper.py 2026-04-09
+- DAILY_REFLECT_GCAL_CREDENTIALS  client-secret path
+- DAILY_REFLECT_GCAL_TOKEN        OAuth token path (shared w/ universal-calendar-capture)
+- DAILY_REFLECT_GCAL_CALENDARS    comma-separated calendar ids (default: primary + Life Scheduler)
+- DAILY_REFLECT_TZ                day-boundary timezone
+- DAILY_REFLECT_DAY_BOUNDARY_HOUR hour the day starts (default 4)
+
+Outputs a JSON list of {start, end, summary, calendar, all_day} to stdout.
+Never prints secrets. Exits 0 with "[]" if the google libs or token are absent.
 """
 
 import json
+import os
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 try:
     from google.oauth2.credentials import Credentials
@@ -22,80 +32,96 @@ except ImportError:
     sys.exit(0)
 
 SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
-CREDENTIALS_PATH = Path.home() / "secrets" / "gcal_client_secret.json"
-TOKEN_PATH = Path.home() / "Projects" / "universal-calendar-capture" / "token.json"
+
+LIFE_SCHEDULER_ID = (
+    "d025c2d71036a3fd4ff6f5e7b44e7e785bf55169cc6b35fbe54b14de0666483d"
+    "@group.calendar.google.com"
+)
 
 
-def get_credentials() -> Credentials | None:
+def _tz() -> ZoneInfo:
+    return ZoneInfo(os.environ.get("DAILY_REFLECT_TZ", "America/Los_Angeles"))
+
+
+def _credentials():
+    token_path = Path(
+        os.environ.get("DAILY_REFLECT_GCAL_TOKEN")
+        or str(Path(os.environ.get("XDG_DATA_HOME") or str(Path.home() / ".local" / "share"))
+               / "universal-calendar-capture" / "token.json")
+    )
+    creds_path = Path(
+        os.environ.get("DAILY_REFLECT_GCAL_CREDENTIALS")
+        or str(Path.home() / "secrets" / "gcal_client_secret.json")
+    )
+
     creds = None
-    if TOKEN_PATH.exists():
-        creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
-
+    if token_path.exists():
+        creds = Credentials.from_authorized_user_file(str(token_path), SCOPES)
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
-        elif CREDENTIALS_PATH.exists():
-            flow = InstalledAppFlow.from_client_secrets_file(str(CREDENTIALS_PATH), SCOPES)
+        elif creds_path.exists():
+            flow = InstalledAppFlow.from_client_secrets_file(str(creds_path), SCOPES)
             creds = flow.run_local_server(port=0)
         else:
             return None
-        TOKEN_PATH.write_text(creds.to_json())
-
+        token_path.parent.mkdir(parents=True, exist_ok=True)
+        token_path.write_text(creds.to_json())
     return creds
 
 
+def _calendar_ids() -> list[str]:
+    raw = os.environ.get("DAILY_REFLECT_GCAL_CALENDARS")
+    if raw:
+        return [c.strip() for c in raw.split(",") if c.strip()]
+    return ["primary", LIFE_SCHEDULER_ID]
+
+
 def fetch_events(date_str: str) -> list[dict]:
-    creds = get_credentials()
+    creds = _credentials()
     if not creds:
         return []
-
     service = build("calendar", "v3", credentials=creds)
 
-    # Day boundary at 04:00 UTC
-    date = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
-    time_min = date.replace(hour=4, minute=0, second=0).isoformat()
-    time_max = (date + timedelta(days=1)).replace(hour=4, minute=0, second=0).isoformat()
+    tz = _tz()
+    boundary = int(os.environ.get("DAILY_REFLECT_DAY_BOUNDARY_HOUR", "4"))
+    naive = datetime.strptime(date_str, "%Y-%m-%d")
+    start_local = naive.replace(hour=boundary, minute=0, second=0, tzinfo=tz)
+    end_local = start_local + timedelta(days=1)
+    time_min = start_local.astimezone(timezone.utc).isoformat()
+    time_max = end_local.astimezone(timezone.utc).isoformat()
 
-    result = (
-        service.events()
-        .list(
-            calendarId="primary",
-            timeMin=time_min,
-            timeMax=time_max,
-            singleEvents=True,
-            orderBy="startTime",
-        )
-        .execute()
-    )
-
-    events = []
-    for item in result.get("items", []):
-        start = item.get("start", {})
-        end = item.get("end", {})
-
-        # Handle all-day events vs timed events
-        start_dt = start.get("dateTime", start.get("date", ""))
-        end_dt = end.get("dateTime", end.get("date", ""))
-
-        # Skip all-day events for time tracking
-        if "dateTime" not in start:
+    events: list[dict] = []
+    for cal_id in _calendar_ids():
+        try:
+            result = (
+                service.events()
+                .list(calendarId=cal_id, timeMin=time_min, timeMax=time_max,
+                      singleEvents=True, orderBy="startTime")
+                .execute()
+            )
+        except Exception as e:
+            sys.stderr.write(f"calendar {cal_id[:20]} error: {str(e)[:120]}\n")
             continue
-
-        events.append(
-            {
-                "start": start_dt,
-                "end": end_dt,
+        for item in result.get("items", []):
+            start, end = item.get("start", {}), item.get("end", {})
+            all_day = "dateTime" not in start
+            events.append({
+                "start": start.get("dateTime", start.get("date", "")),
+                "end": end.get("dateTime", end.get("date", "")),
                 "summary": item.get("summary", "(no title)"),
-            }
-        )
-
+                "calendar": "primary" if cal_id == "primary" else ("life-scheduler" if cal_id == LIFE_SCHEDULER_ID else cal_id),
+                "all_day": all_day,
+            })
     return events
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python3 gcal_helper.py YYYY-MM-DD", file=sys.stderr)
-        sys.exit(1)
-
-    events = fetch_events(sys.argv[1])
-    print(json.dumps(events))
+        print("[]")
+        sys.exit(0)
+    try:
+        print(json.dumps(fetch_events(sys.argv[1])))
+    except Exception as e:
+        sys.stderr.write(f"gcal_helper error: {str(e)[:160]}\n")
+        print("[]")

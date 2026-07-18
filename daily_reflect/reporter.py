@@ -1,12 +1,26 @@
-"""Generate reflection reports and inject into daily notes."""
+"""Generate the reflection file and inject into the daily note.
 
-import re
-from datetime import datetime  # noqa: F401 - used in type hints
+Injection is idempotent via HTML-comment markers: the generated block is
+wrapped in ``<!-- daily-reflect:{id}:start -->`` / ``:end`` and re-runs replace
+everything between the markers (full-section replacement), so changed cells
+never accrete a second table.
+"""
+
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from .calendar import CalendarEvent, format_calendar_table
-from .config import VAULT_DAILIES, REFLECTIONS_DIR
-from .timeline import TimeBlock, compute_category_totals, compute_deep_work_hours
+from .config import Config
+from .segmenter import Segment
+from .timeline import (
+    TimeBlock,
+    build_blocks,
+    category_totals,
+    deep_work_hours,
+    switch_metrics,
+    task_totals,
+)
 
 CATEGORY_LABELS = {
     "deep_work_coding": "Deep Work: Coding",
@@ -21,191 +35,152 @@ CATEGORY_LABELS = {
     "entertainment": "Entertainment",
     "ai_interaction": "AI Interaction",
     "break_afk": "Break/AFK",
+    "uncertain": "Uncertain",
 }
+
+DEEP_TARGET_HOURS = 4.0
+
+
+def _label(cat: str) -> str:
+    return CATEGORY_LABELS.get(cat, cat)
+
+
+def _fmt_minutes(mins: float) -> str:
+    return f"{mins / 60:.1f}h" if mins >= 60 else f"{mins:.0f}m"
 
 
 def generate_reflection_file(
-    date_str: str,
-    blocks: list[TimeBlock],
+    date_str: str, segments: list[Segment], cfg: Config,
+    target_deep_hours: float = DEEP_TARGET_HOURS,
 ) -> Path:
-    """Generate a standalone reflection markdown file."""
-    REFLECTIONS_DIR.mkdir(parents=True, exist_ok=True)
-    path = REFLECTIONS_DIR / f"{date_str}.md"
+    """Write the standalone reflection markdown file. Returns its path."""
+    cfg.reflections_dir.mkdir(parents=True, exist_ok=True)
+    path = cfg.reflections_dir / f"{date_str}.md"
+    tz = cfg.tz
 
-    totals = compute_category_totals(blocks)
-    deep_hours = compute_deep_work_hours(blocks)
+    blocks = build_blocks(segments)
+    totals = category_totals(segments)
+    tasks = task_totals(segments)
+    deep = deep_work_hours(segments)
+    metrics = switch_metrics(segments)
 
     lines = [
-        "---",
-        "tags:",
-        "  - ai-generated",
-        "  - reflection",
-        f'created_date: "{date_str}"',
-        "---",
-        "",
-        f"# Daily Reflection — {date_str}",
+        "---", "tags:", "  - ai-generated", "  - reflection",
+        f'created_date: "{date_str}"', "---", "",
+        f"# Daily Reflection — {date_str}", "",
+        f"**Active time:** {metrics['active_hours']}h · "
+        f"**Deep work:** {deep:.1f}h / {target_deep_hours:.0f}h "
+        f"{'MET' if deep >= target_deep_hours else 'NOT MET'} · "
+        f"**Task switches:** {metrics['switches']} "
+        f"({metrics['switches_per_hour']}/h) · "
+        f"**Mean focus streak:** {metrics['mean_focus_streak_min']} min · "
+        f"**Distinct tasks:** {metrics['distinct_tasks']}",
         "",
         "## Activity Timeline",
+        f"*{len(segments)} minute-level segments merged into {len(blocks)} blocks.*",
         "",
-        "| Time | Category | App | Detail | Confidence |",
-        "| ---- | -------- | --- | ------ | ---------- |",
+        "| Time | Category | Task | App | Conf |",
+        "| ---- | -------- | ---- | --- | ---- |",
     ]
-
     for b in blocks:
-        label = CATEGORY_LABELS.get(b.category, b.category)
-        time_range = b.format_time_range()
-        dur = f" ({b.duration_minutes:.0f}m)"
-        lines.append(f"| {time_range} | {label}{dur} | {b.app} | {b.detail} | {b.confidence} |")
+        lines.append(
+            f"| {b.format_time_range(tz)} ({b.duration_minutes:.0f}m) | "
+            f"{_label(b.category)} | {b.task or '—'} | {b.app or '—'} | {b.confidence} |"
+        )
 
-    lines.extend([
-        "",
-        "## Category Summary",
-        "",
-        "| Category | Time |",
-        "| -------- | ---- |",
-    ])
+    lines += ["", "## Time by Task", "", "| Task | Category | Time |", "| ---- | -------- | ---- |"]
+    for cat, task, mins in tasks[:25]:
+        lines.append(f"| {task} | {_label(cat)} | {_fmt_minutes(mins)} |")
 
-    for cat, minutes in sorted(totals.items(), key=lambda x: -x[1]):
-        label = CATEGORY_LABELS.get(cat, cat)
-        hours = minutes / 60
-        if hours >= 1:
-            lines.append(f"| {label} | {hours:.1f}h |")
-        else:
-            lines.append(f"| {label} | {minutes:.0f}m |")
+    lines += ["", "## Category Summary", "", "| Category | Time |", "| -------- | ---- |"]
+    for cat, mins in sorted(totals.items(), key=lambda x: -x[1]):
+        lines.append(f"| {_label(cat)} | {_fmt_minutes(mins)} |")
+    lines.append(f"| **Total tracked** | **{sum(totals.values()) / 60:.1f}h** |")
 
-    total_tracked = sum(totals.values())
-    lines.extend([
-        f"| **Total tracked** | **{total_tracked / 60:.1f}h** |",
+    lines += [
+        "", "## Focus & Switching", "",
+        f"- **Distinct tasks:** {metrics['distinct_tasks']}",
+        f"- **Task switches:** {metrics['switches']} ({metrics['switches_per_hour']} per active hour)",
+        f"- **Mean focus streak:** {metrics['mean_focus_streak_min']} minutes",
+        "", "## Deep Work", "",
+        f"- **Total:** {deep:.1f}h",
+        f"- **Target:** {target_deep_hours:.0f}h",
+        f"- **Status:** {'MET' if deep >= target_deep_hours else 'NOT MET'} ({deep:.1f}/{target_deep_hours:.0f}h)",
         "",
-        "## Deep Work",
-        "",
-        f"- **Total deep work**: {deep_hours:.1f}h",
-        f"- **Target**: 4.0h",
-        f"- **Status**: {'MET' if deep_hours >= 4.0 else 'NOT MET'} ({deep_hours:.1f}/4.0h)",
-        "",
-    ])
-
+    ]
     path.write_text("\n".join(lines))
     return path
 
 
-def generate_time_log_table(blocks: list[TimeBlock]) -> str:
-    """Generate markdown table rows for the daily note Time Log (actual)."""
+def _time_log_rows(blocks: list[TimeBlock], tz: ZoneInfo) -> str:
     rows = []
     for b in blocks:
-        label = CATEGORY_LABELS.get(b.category, b.category)
-        dur_min = b.duration_minutes
-        if dur_min >= 60:
-            dur_str = f"{dur_min / 60:.1f}h"
-        else:
-            dur_str = f"{dur_min:.0f}m"
-        rows.append(f"| {b.start.strftime('%H:%M')} | {label}: {b.detail} | {dur_str} | {b.confidence} confidence |")
+        detail = f"{_label(b.category)}: {b.task}" if b.task else _label(b.category)
+        rows.append(
+            f"| {b.start.astimezone(tz).strftime('%H:%M')} | {detail} | "
+            f"{_fmt_minutes(b.duration_minutes)} | {b.confidence} |"
+        )
     return "\n".join(rows)
 
 
 def inject_into_daily_note(
-    date_str: str,
-    blocks: list[TimeBlock],
-    calendar_events: list[CalendarEvent],
+    date_str: str, segments: list[Segment], events: list[CalendarEvent], cfg: Config,
 ) -> bool:
-    """Inject Time Plan (from calendar) and Time Log (actual) into the daily note.
+    """Inject Time Plan + Time Log into the daily note idempotently.
 
-    Returns True if successful, False otherwise.
+    Returns True on write, False if the note is missing.
     """
-    note_path = VAULT_DAILIES / f"{date_str}.md"
+    note_path = cfg.dailies_dir / f"{date_str}.md"
     if not note_path.exists():
         print(f"  Daily note not found: {note_path}")
         return False
 
     content = note_path.read_text()
+    tz = cfg.tz
+    blocks = build_blocks(segments)
+    metrics = switch_metrics(segments)
+    deep = deep_work_hours(segments)
 
-    # Inject calendar events into Time Plan table
-    if calendar_events:
-        cal_table = format_calendar_table(calendar_events)
-        content = _inject_table_rows(
-            content,
-            section_header="## Time Plan",
-            table_header="| Time | Planned Activity | Category |",
-            new_rows=cal_table,
-        )
+    if events:
+        plan = ("| Time | Planned Activity | Calendar |\n"
+                "| ---- | ---------------- | -------- |\n"
+                + format_calendar_table(events, tz))
+        content = _inject_marked(content, "## Time Plan", "time-plan", plan)
 
-    # Inject activity timeline into Time Log (actual) table
-    if blocks:
-        time_log = generate_time_log_table(blocks)
-        content = _inject_table_rows(
-            content,
-            section_header="### Time Log (actual)",
-            table_header="| Time | Activity | Duration | Notes |",
-            new_rows=time_log,
-        )
+    log_header = "| Time | Activity | Duration | Conf |\n| ---- | -------- | -------- | ---- |\n"
+    summary = (
+        f"*Deep work {deep:.1f}h · {metrics['switches']} switches "
+        f"({metrics['switches_per_hour']}/h) · mean focus {metrics['mean_focus_streak_min']}min*\n\n"
+    )
+    log_body = summary + log_header + _time_log_rows(blocks, tz)
+    content = _inject_marked(content, "### Time Log (actual)", "time-log", log_body)
 
     note_path.write_text(content)
     return True
 
 
-def _inject_table_rows(
-    content: str,
-    section_header: str,
-    table_header: str,
-    new_rows: str,
-) -> str:
-    """Inject rows into a markdown table within a section.
+def _inject_marked(content: str, section_header: str, marker_id: str, body: str) -> str:
+    """Replace (or insert) a marker-delimited block.
 
-    Finds the section, then the first markdown table (header + separator),
-    then either replaces empty rows or appends after existing data rows.
-    table_header is used as a fallback identifier but matching is flexible.
+    If the markers already exist, replace what's between them. Otherwise insert
+    right after ``section_header``; if that header is absent, append a new
+    section at the end of the file.
     """
-    # Find the section
-    header_idx = content.find(section_header)
-    if header_idx < 0:
-        return content
+    start_m = f"<!-- daily-reflect:{marker_id}:start -->"
+    end_m = f"<!-- daily-reflect:{marker_id}:end -->"
+    block = f"{start_m}\n{body}\n{end_m}"
 
-    # Split content after section header into lines
-    section_start = content.find("\n", header_idx) + 1
-    before = content[:section_start]
-    after_lines = content[section_start:].split("\n")
+    s = content.find(start_m)
+    if s != -1:
+        e = content.find(end_m, s)
+        if e != -1:
+            return content[:s] + block + content[e + len(end_m):]
 
-    # Find the table: look for a separator row (| --- | --- |)
-    sep_idx = None
-    for i, line in enumerate(after_lines):
-        stripped = line.strip()
-        if re.match(r"\|[\s-]+\|", stripped) and "---" in stripped:
-            sep_idx = i
-            break
+    hdr = content.find(section_header)
+    if hdr != -1:
+        line_end = content.find("\n", hdr)
+        insert_at = line_end + 1 if line_end != -1 else len(content)
+        return content[:insert_at] + "\n" + block + "\n" + content[insert_at:]
 
-    if sep_idx is None:
-        return content
-
-    # The header row is the line before the separator
-    header_line_idx = sep_idx - 1
-
-    # Find all data rows after separator
-    last_table_row = sep_idx
-    empty_start = None
-    empty_end = None
-
-    for i in range(sep_idx + 1, len(after_lines)):
-        line = after_lines[i].strip()
-        if not line.startswith("|"):
-            break
-        last_table_row = i
-        cell_content = re.sub(r"[|\s\-—]", "", line)
-        if not cell_content:
-            if empty_start is None:
-                empty_start = i
-            empty_end = i
-
-    # Check if the new rows are already present (idempotent re-run)
-    first_new_line = new_rows.split("\n")[0].strip()
-    existing_data = "\n".join(after_lines[sep_idx + 1:last_table_row + 1])
-    if first_new_line and first_new_line in existing_data:
-        return content  # Already injected
-
-    if empty_start is not None:
-        # Replace empty rows with new data
-        after_lines[empty_start:empty_end + 1] = [new_rows]
-    else:
-        # Append after last data row (or separator if no data)
-        after_lines.insert(last_table_row + 1, new_rows)
-
-    return before + "\n".join(after_lines)
+    sep = "" if content.endswith("\n") else "\n"
+    return f"{content}{sep}\n{section_header}\n\n{block}\n"
