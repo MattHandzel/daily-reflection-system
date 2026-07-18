@@ -85,6 +85,9 @@ class Config:
     prompt_version: str = "v2"
     concurrency: int = 3
     request_timeout: int = 120
+    # Free the shared GPU (STT + embeddings live on the same 12GB card) soon
+    # after a burst instead of holding it for Ollama's 5-minute default.
+    keep_alive: str = "30s"
 
     # Google Calendar
     gcal_credentials: Path = field(default_factory=lambda: Path.home() / "secrets" / "gcal_client_secret.json")
@@ -141,6 +144,7 @@ def load_config() -> Config:
         prompt_version=str(_get("prompt_version", "DAILY_REFLECT_PROMPT_VERSION", "v2")),
         concurrency=_get_int("concurrency", "DAILY_REFLECT_CONCURRENCY", 3),
         request_timeout=_get_int("request_timeout", "DAILY_REFLECT_REQUEST_TIMEOUT", 120),
+        keep_alive=str(_get("keep_alive", "DAILY_REFLECT_KEEP_ALIVE", "30s")),
         gcal_credentials=_get_path("gcal_credentials", "DAILY_REFLECT_GCAL_CREDENTIALS", Path.home() / "secrets" / "gcal_client_secret.json"),
         gcal_token=_get_path(
             "gcal_token", "DAILY_REFLECT_GCAL_TOKEN",

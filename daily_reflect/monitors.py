@@ -8,7 +8,9 @@ stacked above the laptop) and a couple of scaled variants.
 We detect multi-monitor frames by dimensions, crop each monitor's pane, and —
 when the focused monitor is unknown (``monitor_log`` table not yet populated) —
 pick the pane with the most on-screen content as the likely-focused one. When
-that table lands, pass ``focused_box`` to skip the heuristic.
+the ``monitor_log`` table has a row near the frame's timestamp, pass its
+focused monitor name as ``focused_name`` to crop that exact pane and skip the
+content heuristic.
 """
 
 import io
@@ -78,11 +80,12 @@ def _encode(img: Image.Image) -> bytes:
     return buf.getvalue()
 
 
-def prepare_image(path: Path, focused_box: tuple[int, int, int, int] | None = None) -> PreparedImage:
+def prepare_image(path: Path, focused_name: str | None = None) -> PreparedImage:
     """Load a frame, crop to the focused monitor if multi, downscale, encode.
 
-    ``focused_box`` (from ``monitor_log`` when available) forces the pane; else
-    the pane with the most content is chosen for dual-monitor frames.
+    ``focused_name`` (the focused monitor's name from ``monitor_log`` when
+    available) forces the matching pane; else the pane with the most content is
+    chosen for dual-monitor frames (dimension-inference fallback).
     """
     img = Image.open(path)
     img.load()
@@ -90,12 +93,14 @@ def prepare_image(path: Path, focused_box: tuple[int, int, int, int] | None = No
     panes = _panes_for(w, h)
     is_multi = len(panes) > 1
 
-    if focused_box is not None:
-        crop = img.crop(focused_box)
-        return PreparedImage(_encode(crop), w, h, is_multi, "focused")
-
     if not is_multi:
         return PreparedImage(_encode(img), w, h, False, "full")
+
+    # monitor_log ground truth: crop the exact focused pane by name.
+    if focused_name:
+        for name, box in panes:
+            if name == focused_name:
+                return PreparedImage(_encode(img.crop(box)), w, h, True, name)
 
     best_name, best_img, best_score = "full", img, -1.0
     for name, box in panes:

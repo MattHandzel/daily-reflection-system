@@ -2,6 +2,26 @@
 
 Newest first. Each entry: what happened + the fix, so the next agent doesn't repeat it.
 
+## 2026-07-18 — monitor_log crop half-wired: signature threaded, call site not
+
+**Mistake:** The `monitor_log` exact-pane crop was added by threading a
+`focused_name`/`focused_monitor` parameter through `monitors.prepare_image`,
+`classifier.classify_frame`, and adding `collect_monitor_events` /
+`focused_monitor_at` in `collector.py` — but the *call site* in
+`classifier.enrich_segments` still invoked `classify_frame` without it, and
+`main.py` never called `collect_monitor_events`. So the feature was dead: on a
+day with `monitor_log` rows (2026-07-18) the pipeline silently fell back to the
+content heuristic, which on 5/6 dual-monitor frames picked the WRONG (unfocused
+but content-heavy eDP-1) pane over the focused-but-sparse DP-1.
+
+**Fix:** Loaded `collect_monitor_events` in `main.py`, passed it into
+`enrich_segments`, and called `focused_monitor_at(frame.dt, monitor_events)` at
+the `classify_frame` submit. Verified the ground-truth crop now selects DP-1
+where the heuristic chose eDP-1. Lesson: threading a parameter through
+signatures is not "wired" until the outermost caller supplies a real value —
+grep the call graph from the entry point, and verify the feature fires on data
+that should trigger it, not just that it compiles.
+
 ## 2026-07-18 — Multi-monitor fallback assumed vertical-only stacking
 
 **Mistake:** The generic multi-monitor fallback in `monitors._panes_for` only

@@ -28,6 +28,12 @@ class Frame:
     is_png: bool
 
 
+@dataclass(frozen=True)
+class MonitorEvent:
+    dt: datetime
+    focused_name: str  # name of the focused monitor at this timestamp
+
+
 def day_bounds(date_str: str, cfg: Config) -> tuple[datetime, datetime]:
     """(start, end) UTC-aware datetimes for the local day boundary.
 
@@ -121,6 +127,68 @@ def collect_window_events(date_str: str, cfg: Config) -> list[WindowEvent]:
         return events
     finally:
         conn.close()
+
+
+def collect_monitor_events(date_str: str, cfg: Config) -> list[MonitorEvent]:
+    """Return the focused monitor over time from ``monitor_log``, sorted by time.
+
+    Each logged timestamp records every monitor's geometry with a ``focused``
+    flag; we keep one ``MonitorEvent`` per timestamp naming the focused monitor.
+    Absent table (older data) -> empty list, and cropping falls back to
+    dimension inference. Rows may have zero or multiple focused monitors at a
+    tick (transient); we take the first focused one.
+    """
+    start, end = day_bounds(date_str, cfg)
+    if not cfg.db_path.exists():
+        return []
+    conn = sqlite3.connect(str(cfg.db_path))
+    try:
+        conn.execute("SELECT 1 FROM monitor_log LIMIT 1")
+    except sqlite3.OperationalError:
+        conn.close()
+        return []
+    try:
+        cursor = conn.execute(
+            "SELECT timestamp, name FROM monitor_log "
+            "WHERE timestamp >= ? AND timestamp < ? AND focused = 1 ORDER BY timestamp",
+            (start.isoformat(), end.isoformat()),
+        )
+        by_ts: dict[str, MonitorEvent] = {}
+        for ts, name in cursor.fetchall():
+            if ts in by_ts:
+                continue
+            try:
+                dt = datetime.fromisoformat(ts)
+            except (ValueError, TypeError):
+                continue
+            by_ts[ts] = MonitorEvent(dt, name or "")
+        return sorted(by_ts.values(), key=lambda m: m.dt)
+    finally:
+        conn.close()
+
+
+def focused_monitor_at(
+    dt: datetime, monitors: list[MonitorEvent], max_skew_seconds: float = 30.0
+) -> str | None:
+    """Focused monitor name nearest ``dt``, or None if no row is close enough.
+
+    A frame is only cropped by ground truth when a monitor_log row is within
+    ``max_skew_seconds`` (both log ~10s); otherwise the caller falls back to the
+    dimension-inference content heuristic.
+    """
+    if not monitors:
+        return None
+    times = [m.dt for m in monitors]
+    i = bisect_left(times, dt)
+    candidates = []
+    if i < len(monitors):
+        candidates.append(monitors[i])
+    if i > 0:
+        candidates.append(monitors[i - 1])
+    best = min(candidates, key=lambda m: abs((m.dt - dt).total_seconds()))
+    if abs((best.dt - dt).total_seconds()) > max_skew_seconds:
+        return None
+    return best.focused_name or None
 
 
 def find_window_context(dt: datetime, events: list[WindowEvent]) -> tuple[str, str]:

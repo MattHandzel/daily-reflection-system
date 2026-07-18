@@ -21,6 +21,7 @@ from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Callable
 
+from .collector import MonitorEvent, focused_monitor_at
 from .config import Config
 from .monitors import prepare_image
 from .segmenter import Segment, representative_frames
@@ -147,11 +148,11 @@ def classify_frame(
     window_title: str,
     window_class: str,
     cfg: Config,
-    focused_box: tuple[int, int, int, int] | None = None,
+    focused_monitor: str | None = None,
 ) -> Classification:
     """Classify one frame. Crops to the focused monitor for multi-monitor frames."""
     try:
-        prepared = prepare_image(path, focused_box=focused_box)
+        prepared = prepare_image(path, focused_name=focused_monitor)
     except Exception as e:  # unreadable/corrupt image is content, not transport
         return Classification(UNCERTAIN, "", "unknown", "low", cfg.model, cfg.prompt_version,
                               error=f"image error: {str(e)[:80]}")
@@ -167,6 +168,7 @@ def classify_frame(
         "images": [img_b64],
         "stream": False,
         "format": "json",
+        "keep_alive": cfg.keep_alive,
         "options": {"temperature": 0.1},
     })
 
@@ -224,6 +226,7 @@ def enrich_segments(
     cfg: Config,
     cache_path: Path,
     progress: Callable[[int, int, str], None] | None = None,
+    monitor_events: list[MonitorEvent] | None = None,
 ) -> tuple[int, int]:
     """Label segments, grouping by task so each distinct task is classified once.
 
@@ -233,8 +236,13 @@ def enrich_segments(
     segment with that key (framed or not). Tasks with no frame anywhere fall
     back to a window-class heuristic (or ``uncertain`` for browsers).
 
+    ``monitor_events`` (from ``monitor_log``, when present) lets a multi-monitor
+    frame be cropped to the exact focused pane; absent, cropping falls back to
+    the dimension-inference content heuristic in ``prepare_image``.
+
     Returns ``(new_calls, cache_hits)``. Runs the VLM calls in a bounded pool.
     """
+    monitor_events = monitor_events or []
     cache = load_cache(cache_path, cfg)
 
     # 1. group active segments by task_key
@@ -286,7 +294,8 @@ def enrich_segments(
             futures = {}
             for key, frame in work:
                 seg0 = groups[key][0]
-                futures[pool.submit(classify_frame, frame.path, seg0.window_title, seg0.window_class, cfg)] = (key, frame)
+                focused = focused_monitor_at(frame.dt, monitor_events)
+                futures[pool.submit(classify_frame, frame.path, seg0.window_title, seg0.window_class, cfg, focused)] = (key, frame)
             done = 0
             for fut in as_completed(futures):
                 key, frame = futures[fut]
