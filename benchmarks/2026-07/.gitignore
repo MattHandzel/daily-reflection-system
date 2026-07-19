@@ -1,0 +1,4 @@
+crops/
+frames/
+*.log
+__pycache__/

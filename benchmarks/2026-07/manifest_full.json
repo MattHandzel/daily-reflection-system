@@ -1,0 +1,722 @@
+[
+  {
+    "frame": "2026-03-14T01:15:54.837666+00:00.png",
+    "ts": "2026-03-14T01:15:54.837666+00:00",
+    "gt_delta_s": 0.9,
+    "gt_class": "chrome-calendar.google.com__calendar_u_0_r-Default",
+    "gt_title": "Google Calendar - 7 days, starting Friday, March 13, 2026",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-03-14T19:08:27.259937+00:00.png",
+    "ts": "2026-03-14T19:08:27.259937+00:00",
+    "gt_delta_s": 1.9,
+    "gt_class": "chrome-gemini.google.com__-Default",
+    "gt_title": "Google Gemini",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-03-15T19:07:14.407521+00:00.png",
+    "ts": "2026-03-15T19:07:14.407521+00:00",
+    "gt_delta_s": 0.4,
+    "gt_class": "feh",
+    "gt_title": "feh [311 of 1119] - 2026-03-12T21:05:05.990621+00:00.png",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-04-01T06:01:13.205730+00:00.png",
+    "ts": "2026-04-01T06:01:13.205730+00:00",
+    "gt_delta_s": 5.0,
+    "gt_class": "anki",
+    "gt_title": "MattHandzel - Anki",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-04-01T21:09:17.614596+00:00.png",
+    "ts": "2026-04-01T21:09:17.614596+00:00",
+    "gt_delta_s": 1.2,
+    "gt_class": "Electron",
+    "gt_title": "",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-04-02T03:56:37.926663+00:00.png",
+    "ts": "2026-04-02T03:56:37.926663+00:00",
+    "gt_delta_s": 0.9,
+    "gt_class": "thunderbird",
+    "gt_title": "Password Reset Notification - Mozilla Thunderbird",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-04-02T15:58:57.069887+00:00.png",
+    "ts": "2026-04-02T15:58:57.069887+00:00",
+    "gt_delta_s": 3.7,
+    "gt_class": "gcr-prompter",
+    "gt_title": "Unlock Keyring",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-04-03T01:00:26.019935+00:00.png",
+    "ts": "2026-04-03T01:00:26.019935+00:00",
+    "gt_delta_s": 3.8,
+    "gt_class": "com.obsproject.Studio",
+    "gt_title": "OBS 32.0.4 - Profile: Untitled - Scenes: Untitled",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-04-07T23:54:13.939955+00:00.png",
+    "ts": "2026-04-07T23:54:13.939955+00:00",
+    "gt_delta_s": 1.7,
+    "gt_class": "firefox",
+    "gt_title": "Mozilla Firefox",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-04-10T01:03:58.181228+00:00.png",
+    "ts": "2026-04-10T01:03:58.181228+00:00",
+    "gt_delta_s": 0.4,
+    "gt_class": "beepertexts",
+    "gt_title": "",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-04-10T16:59:40.561389+00:00.png",
+    "ts": "2026-04-10T16:59:40.561389+00:00",
+    "gt_delta_s": 2.3,
+    "gt_class": "chromium-browser",
+    "gt_title": "Meet - Matthew Handzel, Sean Pan, and Ben Goldhaber - Chromium",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-04-10T23:39:17.383551+00:00.png",
+    "ts": "2026-04-10T23:39:17.383551+00:00",
+    "gt_delta_s": 3.4,
+    "gt_class": "mpv",
+    "gt_title": "ben-goldhaber-shon-pan-meeting-2026-04-10.mp4 - mpv",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-04-16T03:20:02.649045+00:00.png",
+    "ts": "2026-04-16T03:20:02.649045+00:00",
+    "gt_delta_s": 2.9,
+    "gt_class": "discord",
+    "gt_title": "#co-founder-matching | AIS Founders - Discord",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-08T04:32:24.702474+00:00.png",
+    "ts": "2026-05-08T04:32:24.702474+00:00",
+    "gt_delta_s": 1.1,
+    "gt_class": "",
+    "gt_title": "Application Not Responding",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-08T22:41:16.616182+00:00.png",
+    "ts": "2026-05-08T22:41:16.616182+00:00",
+    "gt_delta_s": 4.8,
+    "gt_class": "floating-pl",
+    "gt_title": "Polish Correction",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-09T22:04:33.689293+00:00.png",
+    "ts": "2026-05-09T22:04:33.689293+00:00",
+    "gt_delta_s": 3.9,
+    "gt_class": "chrome-claude.ai__-Default",
+    "gt_title": "Personal Website",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-16T17:45:48.511647+00:00.png",
+    "ts": "2026-05-16T17:45:48.511647+00:00",
+    "gt_delta_s": 0.8,
+    "gt_class": "Claude",
+    "gt_title": "Claude",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-16T20:50:14.478980+00:00.png",
+    "ts": "2026-05-16T20:50:14.478980+00:00",
+    "gt_delta_s": 0.1,
+    "gt_class": "org.gnome.Nautilus",
+    "gt_title": "Downloads",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-18T23:59:26.238559+00:00.png",
+    "ts": "2026-05-18T23:59:26.238559+00:00",
+    "gt_delta_s": 4.7,
+    "gt_class": null,
+    "gt_title": null,
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-19T02:26:13.956327+00:00.png",
+    "ts": "2026-05-19T02:26:13.956327+00:00",
+    "gt_delta_s": 0.5,
+    "gt_class": "calibre-gui",
+    "gt_title": "calibre \u2014 || Calibre Library ||",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-21T04:18:39.086778+00:00.png",
+    "ts": "2026-05-21T04:18:39.086778+00:00",
+    "gt_delta_s": 3.0,
+    "gt_class": "org.pulseaudio.pavucontrol",
+    "gt_title": "Volume Control",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-21T04:41:49.957042+00:00.png",
+    "ts": "2026-05-21T04:41:49.957042+00:00",
+    "gt_delta_s": 1.1,
+    "gt_class": "eu.betterbird.Betterbird",
+    "gt_title": "Write: Re: Follow-up on Phonebank with Alex Bores for NY - Betterbird",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-22T22:41:16.177633+00:00.png",
+    "ts": "2026-05-22T22:41:16.177633+00:00",
+    "gt_delta_s": 0.7,
+    "gt_class": "kitty",
+    "gt_title": "notetaker",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-27T18:38:56.475821+00:00.png",
+    "ts": "2026-05-27T18:38:56.475821+00:00",
+    "gt_delta_s": 3.0,
+    "gt_class": "org.kde.dolphin",
+    "gt_title": "Downloads \u2014 Dolphin",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-28T01:04:23.445333+00:00.png",
+    "ts": "2026-05-28T01:04:23.445333+00:00",
+    "gt_delta_s": 0.2,
+    "gt_class": "zoom",
+    "gt_title": "Meeting",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-30T01:31:41.722867+00:00.png",
+    "ts": "2026-05-30T01:31:41.722867+00:00",
+    "gt_delta_s": 4.8,
+    "gt_class": ".blueman-manager-wrapped",
+    "gt_title": "Bluetooth Devices",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-30T03:39:04.980651+00:00.png",
+    "ts": "2026-05-30T03:39:04.980651+00:00",
+    "gt_delta_s": 3.1,
+    "gt_class": "gimp",
+    "gt_title": "*[Untitled]-1.0 (RGB color 8-bit non-linear integer, GIMP built-in sRGB, 2 layers) 1920x1080 \u2013 GIMP",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-07-03T16:28:50.201279+00:00.png",
+    "ts": "2026-07-03T16:28:50.201279+00:00",
+    "gt_delta_s": 3.9,
+    "gt_class": "BeeperTexts",
+    "gt_title": "Beeper",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-03T16:34:37.493730+00:00.png",
+    "ts": "2026-07-03T16:34:37.493730+00:00",
+    "gt_delta_s": 0.8,
+    "gt_class": "Slack",
+    "gt_title": "gen-general (Channel) - Constellation Institute - 1 new item - Slack",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-07T23:14:57.064770+00:00.png",
+    "ts": "2026-07-07T23:14:57.064770+00:00",
+    "gt_delta_s": 0.2,
+    "gt_class": "zen-beta",
+    "gt_title": "The AI Deal of the Century? | RealClearPolitics \u2014 Zen Browser",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-08T00:01:39.819025+00:00.png",
+    "ts": "2026-07-08T00:01:39.819025+00:00",
+    "gt_delta_s": 3.9,
+    "gt_class": "calibre-ebook-viewer",
+    "gt_title": "Mckeown, Greg - Essentialism: The Disciplined Pursuit of Less [KF8] \u2014 E-book viewer",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-07-09T01:53:23.784132+00:00.png",
+    "ts": "2026-07-09T01:53:23.784132+00:00",
+    "gt_delta_s": 4.0,
+    "gt_class": "eu.betterbird.Betterbird",
+    "gt_title": "Inbox - handzelmatthew@gmail.com - Betterbird",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-09T01:56:15.687511+00:00.png",
+    "ts": "2026-07-09T01:56:15.687511+00:00",
+    "gt_delta_s": 2.6,
+    "gt_class": "eu.betterbird.Betterbird",
+    "gt_title": "Inbox - handzelmatthew@gmail.com - Betterbird",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-09T02:15:17.907546+00:00.png",
+    "ts": "2026-07-09T02:15:17.907546+00:00",
+    "gt_delta_s": 3.0,
+    "gt_class": "eu.betterbird.Betterbird",
+    "gt_title": "Inbox - handzelmatthew@gmail.com - Betterbird",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-09T02:22:49.250061+00:00.png",
+    "ts": "2026-07-09T02:22:49.250061+00:00",
+    "gt_delta_s": 2.6,
+    "gt_class": "eu.betterbird.Betterbird",
+    "gt_title": "Inbox - handzelmatthew@gmail.com - Betterbird",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-09T15:15:31.964401+00:00.png",
+    "ts": "2026-07-09T15:15:31.964401+00:00",
+    "gt_delta_s": 4.6,
+    "gt_class": "zenity",
+    "gt_title": "nixos-assistant",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-09T17:18:18.219317+00:00.png",
+    "ts": "2026-07-09T17:18:18.219317+00:00",
+    "gt_delta_s": 0.2,
+    "gt_class": "com.saivert.pwvucontrol",
+    "gt_title": "Pipewire Volume Control",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-07-09T20:42:56.627168+00:00.png",
+    "ts": "2026-07-09T20:42:56.627168+00:00",
+    "gt_delta_s": 0.2,
+    "gt_class": "zen-beta",
+    "gt_title": "Matt <> Jeff Ongoing Agenda - Google Docs \u2014 Zen Browser",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-09T21:33:33.129119+00:00.png",
+    "ts": "2026-07-09T21:33:33.129119+00:00",
+    "gt_delta_s": 4.8,
+    "gt_class": "Slack",
+    "gt_title": "Chanden Climaco, Joe Hajj, Seth Lifland (DM) - Constellation Institute - 4 new items - Slack",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-09T23:23:40.557658+00:00.png",
+    "ts": "2026-07-09T23:23:40.557658+00:00",
+    "gt_delta_s": 2.0,
+    "gt_class": "obsidian",
+    "gt_title": "Release Notes 1.12.7 - Obsidian - Obsidian 1.12.7",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-07-11T18:09:18.996280+00:00.png",
+    "ts": "2026-07-11T18:09:18.996280+00:00",
+    "gt_delta_s": 3.1,
+    "gt_class": "obsidian",
+    "gt_title": "agentsteer-info - ramify - Obsidian 1.12.7",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-12T03:11:31.095996+00:00.png",
+    "ts": "2026-07-12T03:11:31.095996+00:00",
+    "gt_delta_s": 0.9,
+    "gt_class": "zen-beta",
+    "gt_title": "What are Trigger-Action Plans (TAPs)? \u2014 LessWrong \u2014 Zen Browser",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-12T17:32:14.608631+00:00.png",
+    "ts": "2026-07-12T17:32:14.608631+00:00",
+    "gt_delta_s": 3.6,
+    "gt_class": "chrome-server.matthandzel.com__-Default",
+    "gt_title": "ntfy",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-07-12T18:13:56.774011+00:00.png",
+    "ts": "2026-07-12T18:13:56.774011+00:00",
+    "gt_delta_s": 0.5,
+    "gt_class": "zen-beta",
+    "gt_title": "Matt <> Jeff Ongoing Agenda - Google Docs \u2014 Zen Browser",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-12T22:28:54.949077+00:00.png",
+    "ts": "2026-07-12T22:28:54.949077+00:00",
+    "gt_delta_s": 3.2,
+    "gt_class": "kitty",
+    "gt_title": "notetaker",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-12T23:15:50.228467+00:00.png",
+    "ts": "2026-07-12T23:15:50.228467+00:00",
+    "gt_delta_s": 2.2,
+    "gt_class": "nm-applet",
+    "gt_title": "Wi-Fi Network Authentication Required",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-07-13T05:28:12.420417+00:00.png",
+    "ts": "2026-07-13T05:28:12.420417+00:00",
+    "gt_delta_s": 4.6,
+    "gt_class": "brave-browser",
+    "gt_title": "Project Imago Dei \u2014 A Brief Overview - Brave",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-07-13T18:34:26.044140+00:00.png",
+    "ts": "2026-07-13T18:34:26.044140+00:00",
+    "gt_delta_s": 3.6,
+    "gt_class": "chrome-calendar.google.com__-Default",
+    "gt_title": "Google Calendar - Week of July 13, 2026",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-14T00:05:50.229170+00:00.png",
+    "ts": "2026-07-14T00:05:50.229170+00:00",
+    "gt_delta_s": 2.2,
+    "gt_class": "wev",
+    "gt_title": "wev",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-14T00:11:09.075730+00:00.png",
+    "ts": "2026-07-14T00:11:09.075730+00:00",
+    "gt_delta_s": 0.5,
+    "gt_class": "kitty",
+    "gt_title": "tmux",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-14T15:10:15.439218+00:00.png",
+    "ts": "2026-07-14T15:10:15.439218+00:00",
+    "gt_delta_s": 3.0,
+    "gt_class": "Espanso.SyncTool",
+    "gt_title": "Espanso Sync Tool",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-14T21:02:22.888414+00:00.png",
+    "ts": "2026-07-14T21:02:22.888414+00:00",
+    "gt_delta_s": 2.4,
+    "gt_class": "kitty",
+    "gt_title": "notetaker",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-14T21:20:48.453351+00:00.png",
+    "ts": "2026-07-14T21:20:48.453351+00:00",
+    "gt_delta_s": 2.4,
+    "gt_class": "Slack",
+    "gt_title": "Jeff Alstott (DM) - Constellation Institute - 3 new items - Slack",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-14T23:53:41.757559+00:00.png",
+    "ts": "2026-07-14T23:53:41.757559+00:00",
+    "gt_delta_s": 1.7,
+    "gt_class": "espanso-probe",
+    "gt_title": "espanso-probe",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-14T23:56:25.369865+00:00.png",
+    "ts": "2026-07-14T23:56:25.369865+00:00",
+    "gt_delta_s": 5.0,
+    "gt_class": "ezp",
+    "gt_title": "ezp",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-15T00:10:54.262228+00:00.png",
+    "ts": "2026-07-15T00:10:54.262228+00:00",
+    "gt_delta_s": 0.7,
+    "gt_class": "chrome-linear.app__-Default",
+    "gt_title": "RAM-43 Design how we technically evaluate candidates Jeff can't evaluate (Chris, Ram) \u2014 recruit an expert friend as interviewer",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-15T04:30:35.667337+00:00.png",
+    "ts": "2026-07-15T04:30:35.667337+00:00",
+    "gt_delta_s": 0.4,
+    "gt_class": "Slack",
+    "gt_title": "Jeff Alstott (DM) - Constellation Institute - 3 new items - Slack",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-07-16T16:45:19.645456+00:00.png",
+    "ts": "2026-07-16T16:45:19.645456+00:00",
+    "gt_delta_s": 0.3,
+    "gt_class": "wispr-flow",
+    "gt_title": "Hub",
+    "dims": [
+      5120,
+      4680
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-17T02:11:52.711813+00:00.png",
+    "ts": "2026-07-17T02:11:52.711813+00:00",
+    "gt_delta_s": 4.8,
+    "gt_class": "calibre-ebook-edit",
+    "gt_title": "Managing Oneself: The Key to Success [EPUB 2] :: Managing Oneself_ The Key to Success -- Drucker, Peter F_ -- 2017 -- Harvard Business Review Press -- isbn13 9781422122907 -- 932a12867b725e4a8ddde563ce70e1c5 -- Anna\u2019s Archive.epub :: Edit book",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-07-18T17:00:26.795960+00:00.png",
+    "ts": "2026-07-18T17:00:26.795960+00:00",
+    "gt_delta_s": 3.4,
+    "gt_class": "zen-beta",
+    "gt_title": "Sanatan Dinda World Bodypainting Festiva at DuckDuckGo \u2014 Zen Browser",
+    "dims": [
+      5120,
+      4680
+    ],
+    "layout": "dual"
+  }
+]

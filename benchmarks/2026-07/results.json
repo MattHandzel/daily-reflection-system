@@ -1,0 +1,355 @@
+{
+  "summary": {
+    "gemma3:12b-it-qat": {
+      "n": 44,
+      "err": 0,
+      "parse_pct": 100.0,
+      "app_acc": 45.8,
+      "title_recall": 16.7,
+      "title_recall_mean": 4.4,
+      "med_infer_s": 14.2,
+      "med_single_s": 15.8,
+      "vram_gb": 11.62,
+      "dual_whole_app": 50.0,
+      "dual_split_app": 70.0,
+      "dual_whole_title_mean": 5.0,
+      "dual_split_title_mean": 12.8,
+      "n_app_scored": 24,
+      "n_dual": 10
+    },
+    "gemma4:e4b": {
+      "n": 44,
+      "err": 0,
+      "parse_pct": 100.0,
+      "app_acc": 45.8,
+      "title_recall": 33.3,
+      "title_recall_mean": 16.5,
+      "med_infer_s": 2.1,
+      "med_single_s": 1.9,
+      "vram_gb": 10.51,
+      "dual_whole_app": 30.0,
+      "dual_split_app": 60.0,
+      "dual_whole_title_mean": 1.5,
+      "dual_split_title_mean": 21.8,
+      "n_app_scored": 24,
+      "n_dual": 10
+    },
+    "qwen3.5:4b": {
+      "n": 44,
+      "err": 0,
+      "parse_pct": 100.0,
+      "app_acc": 62.5,
+      "title_recall": 45.8,
+      "title_recall_mean": 23.6,
+      "med_infer_s": 2.7,
+      "med_single_s": 2.6,
+      "vram_gb": 6.09,
+      "dual_whole_app": 50.0,
+      "dual_split_app": 60.0,
+      "dual_whole_title_mean": 23.6,
+      "dual_split_title_mean": 23.6,
+      "n_app_scored": 24,
+      "n_dual": 10
+    },
+    "qwen3-vl:8b": {
+      "n": 44,
+      "err": 2,
+      "parse_pct": 76.2,
+      "app_acc": 47.8,
+      "title_recall": 43.5,
+      "title_recall_mean": 23.8,
+      "med_infer_s": 45.2,
+      "med_single_s": 33.6,
+      "vram_gb": 7.36,
+      "dual_whole_app": 11.1,
+      "dual_split_app": 44.4,
+      "dual_whole_title_mean": 11.2,
+      "dual_split_title_mean": 17.9,
+      "n_app_scored": 23,
+      "n_dual": 9
+    }
+  },
+  "spot": {
+    "gemma3:12b-it-qat": [
+      {
+        "frame": "2026-07-03T16:28:50.201279+00:00.png",
+        "gt_class": "BeeperTexts",
+        "gt_title": "Beeper",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-03T16:34:37.493730+00:00.png",
+        "gt_class": "Slack",
+        "gt_title": "gen-general (Channel) - Constellation Institute - 1 new item",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-07T23:14:57.064770+00:00.png",
+        "gt_class": "zen-beta",
+        "gt_title": "The AI Deal of the Century? | RealClearPolitics \u2014 Zen Browse",
+        "whole_app": true,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-09T01:53:23.784132+00:00.png",
+        "gt_class": "eu.betterbird.Betterbird",
+        "gt_title": "Inbox - handzelmatthew@gmail.com - Betterbird",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-09T20:42:56.627168+00:00.png",
+        "gt_class": "zen-beta",
+        "gt_title": "Matt <> Jeff Ongoing Agenda - Google Docs \u2014 Zen Browser",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-11T18:09:18.996280+00:00.png",
+        "gt_class": "obsidian",
+        "gt_title": "agentsteer-info - ramify - Obsidian 1.12.7",
+        "whole_app": true,
+        "whole_title_recall": 0.25
+      },
+      {
+        "frame": "2026-07-12T22:28:54.949077+00:00.png",
+        "gt_class": "kitty",
+        "gt_title": "notetaker",
+        "whole_app": true,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-13T18:34:26.044140+00:00.png",
+        "gt_class": "chrome-calendar.google.com__-Default",
+        "gt_title": "Google Calendar - Week of July 13, 2026",
+        "whole_app": true,
+        "whole_title_recall": 0.25
+      },
+      {
+        "frame": "2026-07-14T21:20:48.453351+00:00.png",
+        "gt_class": "Slack",
+        "gt_title": "Jeff Alstott (DM) - Constellation Institute - 3 new items - ",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-15T00:10:54.262228+00:00.png",
+        "gt_class": "chrome-linear.app__-Default",
+        "gt_title": "RAM-43 Design how we technically evaluate candidates Jeff ca",
+        "whole_app": true,
+        "whole_title_recall": 0.0
+      }
+    ],
+    "gemma4:e4b": [
+      {
+        "frame": "2026-07-03T16:28:50.201279+00:00.png",
+        "gt_class": "BeeperTexts",
+        "gt_title": "Beeper",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-03T16:34:37.493730+00:00.png",
+        "gt_class": "Slack",
+        "gt_title": "gen-general (Channel) - Constellation Institute - 1 new item",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-07T23:14:57.064770+00:00.png",
+        "gt_class": "zen-beta",
+        "gt_title": "The AI Deal of the Century? | RealClearPolitics \u2014 Zen Browse",
+        "whole_app": true,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-09T01:53:23.784132+00:00.png",
+        "gt_class": "eu.betterbird.Betterbird",
+        "gt_title": "Inbox - handzelmatthew@gmail.com - Betterbird",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-09T20:42:56.627168+00:00.png",
+        "gt_class": "zen-beta",
+        "gt_title": "Matt <> Jeff Ongoing Agenda - Google Docs \u2014 Zen Browser",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-11T18:09:18.996280+00:00.png",
+        "gt_class": "obsidian",
+        "gt_title": "agentsteer-info - ramify - Obsidian 1.12.7",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-12T22:28:54.949077+00:00.png",
+        "gt_class": "kitty",
+        "gt_title": "notetaker",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-13T18:34:26.044140+00:00.png",
+        "gt_class": "chrome-calendar.google.com__-Default",
+        "gt_title": "Google Calendar - Week of July 13, 2026",
+        "whole_app": true,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-14T21:20:48.453351+00:00.png",
+        "gt_class": "Slack",
+        "gt_title": "Jeff Alstott (DM) - Constellation Institute - 3 new items - ",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-15T00:10:54.262228+00:00.png",
+        "gt_class": "chrome-linear.app__-Default",
+        "gt_title": "RAM-43 Design how we technically evaluate candidates Jeff ca",
+        "whole_app": true,
+        "whole_title_recall": 0.15384615384615385
+      }
+    ],
+    "qwen3.5:4b": [
+      {
+        "frame": "2026-07-03T16:28:50.201279+00:00.png",
+        "gt_class": "BeeperTexts",
+        "gt_title": "Beeper",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-03T16:34:37.493730+00:00.png",
+        "gt_class": "Slack",
+        "gt_title": "gen-general (Channel) - Constellation Institute - 1 new item",
+        "whole_app": false,
+        "whole_title_recall": 0.2857142857142857
+      },
+      {
+        "frame": "2026-07-07T23:14:57.064770+00:00.png",
+        "gt_class": "zen-beta",
+        "gt_title": "The AI Deal of the Century? | RealClearPolitics \u2014 Zen Browse",
+        "whole_app": true,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-09T01:53:23.784132+00:00.png",
+        "gt_class": "eu.betterbird.Betterbird",
+        "gt_title": "Inbox - handzelmatthew@gmail.com - Betterbird",
+        "whole_app": true,
+        "whole_title_recall": 0.25
+      },
+      {
+        "frame": "2026-07-09T20:42:56.627168+00:00.png",
+        "gt_class": "zen-beta",
+        "gt_title": "Matt <> Jeff Ongoing Agenda - Google Docs \u2014 Zen Browser",
+        "whole_app": false,
+        "whole_title_recall": 0.5714285714285714
+      },
+      {
+        "frame": "2026-07-11T18:09:18.996280+00:00.png",
+        "gt_class": "obsidian",
+        "gt_title": "agentsteer-info - ramify - Obsidian 1.12.7",
+        "whole_app": true,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-12T22:28:54.949077+00:00.png",
+        "gt_class": "kitty",
+        "gt_title": "notetaker",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-13T18:34:26.044140+00:00.png",
+        "gt_class": "chrome-calendar.google.com__-Default",
+        "gt_title": "Google Calendar - Week of July 13, 2026",
+        "whole_app": true,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-14T21:20:48.453351+00:00.png",
+        "gt_class": "Slack",
+        "gt_title": "Jeff Alstott (DM) - Constellation Institute - 3 new items - ",
+        "whole_app": false,
+        "whole_title_recall": 0.3333333333333333
+      },
+      {
+        "frame": "2026-07-15T00:10:54.262228+00:00.png",
+        "gt_class": "chrome-linear.app__-Default",
+        "gt_title": "RAM-43 Design how we technically evaluate candidates Jeff ca",
+        "whole_app": true,
+        "whole_title_recall": 0.9230769230769231
+      }
+    ],
+    "qwen3-vl:8b": [
+      {
+        "frame": "2026-07-03T16:28:50.201279+00:00.png",
+        "gt_class": "BeeperTexts",
+        "gt_title": "Beeper",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-03T16:34:37.493730+00:00.png",
+        "gt_class": "Slack",
+        "gt_title": "gen-general (Channel) - Constellation Institute - 1 new item",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-07T23:14:57.064770+00:00.png",
+        "gt_class": "zen-beta",
+        "gt_title": "The AI Deal of the Century? | RealClearPolitics \u2014 Zen Browse",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-09T01:53:23.784132+00:00.png",
+        "gt_class": "eu.betterbird.Betterbird",
+        "gt_title": "Inbox - handzelmatthew@gmail.com - Betterbird",
+        "whole_app": true,
+        "whole_title_recall": 0.25
+      },
+      {
+        "frame": "2026-07-09T20:42:56.627168+00:00.png",
+        "gt_class": "zen-beta",
+        "gt_title": "Matt <> Jeff Ongoing Agenda - Google Docs \u2014 Zen Browser",
+        "whole_app": false,
+        "whole_title_recall": 0.42857142857142855
+      },
+      {
+        "frame": "2026-07-11T18:09:18.996280+00:00.png",
+        "gt_class": "obsidian",
+        "gt_title": "agentsteer-info - ramify - Obsidian 1.12.7",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-12T22:28:54.949077+00:00.png",
+        "gt_class": "kitty",
+        "gt_title": "notetaker",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-13T18:34:26.044140+00:00.png",
+        "gt_class": "chrome-calendar.google.com__-Default",
+        "gt_title": "Google Calendar - Week of July 13, 2026",
+        "whole_app": false,
+        "whole_title_recall": 0.0
+      },
+      {
+        "frame": "2026-07-14T21:20:48.453351+00:00.png",
+        "gt_class": "Slack",
+        "gt_title": "Jeff Alstott (DM) - Constellation Institute - 3 new items - ",
+        "whole_app": false,
+        "whole_title_recall": 0.3333333333333333
+      }
+    ]
+  }
+}

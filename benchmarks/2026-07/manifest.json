@@ -1,0 +1,290 @@
+[
+  {
+    "frame": "2026-03-14T01:15:54.837666+00:00.png",
+    "ts": "2026-03-14T01:15:54.837666+00:00",
+    "gt_delta_s": 0.9,
+    "gt_class": "chrome-calendar.google.com__calendar_u_0_r-Default",
+    "gt_title": "Google Calendar - 7 days, starting Friday, March 13, 2026",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-03-14T19:08:27.259937+00:00.png",
+    "ts": "2026-03-14T19:08:27.259937+00:00",
+    "gt_delta_s": 1.9,
+    "gt_class": "chrome-gemini.google.com__-Default",
+    "gt_title": "Google Gemini",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-03-15T19:07:14.407521+00:00.png",
+    "ts": "2026-03-15T19:07:14.407521+00:00",
+    "gt_delta_s": 0.4,
+    "gt_class": "feh",
+    "gt_title": "feh [311 of 1119] - 2026-03-12T21:05:05.990621+00:00.png",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-04-01T06:01:13.205730+00:00.png",
+    "ts": "2026-04-01T06:01:13.205730+00:00",
+    "gt_delta_s": 5.0,
+    "gt_class": "anki",
+    "gt_title": "MattHandzel - Anki",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-04-02T03:56:37.926663+00:00.png",
+    "ts": "2026-04-02T03:56:37.926663+00:00",
+    "gt_delta_s": 0.9,
+    "gt_class": "thunderbird",
+    "gt_title": "Password Reset Notification - Mozilla Thunderbird",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-04-07T23:54:13.939955+00:00.png",
+    "ts": "2026-04-07T23:54:13.939955+00:00",
+    "gt_delta_s": 1.7,
+    "gt_class": "firefox",
+    "gt_title": "Mozilla Firefox",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-04-16T03:20:02.649045+00:00.png",
+    "ts": "2026-04-16T03:20:02.649045+00:00",
+    "gt_delta_s": 2.9,
+    "gt_class": "discord",
+    "gt_title": "#co-founder-matching | AIS Founders - Discord",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-09T22:04:33.689293+00:00.png",
+    "ts": "2026-05-09T22:04:33.689293+00:00",
+    "gt_delta_s": 3.9,
+    "gt_class": "chrome-claude.ai__-Default",
+    "gt_title": "Personal Website",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-16T17:45:48.511647+00:00.png",
+    "ts": "2026-05-16T17:45:48.511647+00:00",
+    "gt_delta_s": 0.8,
+    "gt_class": "Claude",
+    "gt_title": "Claude",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-16T20:50:14.478980+00:00.png",
+    "ts": "2026-05-16T20:50:14.478980+00:00",
+    "gt_delta_s": 0.1,
+    "gt_class": "org.gnome.Nautilus",
+    "gt_title": "Downloads",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-19T02:26:13.956327+00:00.png",
+    "ts": "2026-05-19T02:26:13.956327+00:00",
+    "gt_delta_s": 0.5,
+    "gt_class": "calibre-gui",
+    "gt_title": "calibre \u2014 || Calibre Library ||",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-28T01:04:23.445333+00:00.png",
+    "ts": "2026-05-28T01:04:23.445333+00:00",
+    "gt_delta_s": 0.2,
+    "gt_class": "zoom",
+    "gt_title": "Meeting",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-05-30T03:39:04.980651+00:00.png",
+    "ts": "2026-05-30T03:39:04.980651+00:00",
+    "gt_delta_s": 3.1,
+    "gt_class": "gimp",
+    "gt_title": "*[Untitled]-1.0 (RGB color 8-bit non-linear integer, GIMP built-in sRGB, 2 layers) 1920x1080 \u2013 GIMP",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  },
+  {
+    "frame": "2026-07-03T16:28:50.201279+00:00.png",
+    "ts": "2026-07-03T16:28:50.201279+00:00",
+    "gt_delta_s": 3.9,
+    "gt_class": "BeeperTexts",
+    "gt_title": "Beeper",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-03T16:34:37.493730+00:00.png",
+    "ts": "2026-07-03T16:34:37.493730+00:00",
+    "gt_delta_s": 0.8,
+    "gt_class": "Slack",
+    "gt_title": "gen-general (Channel) - Constellation Institute - 1 new item - Slack",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-07T23:14:57.064770+00:00.png",
+    "ts": "2026-07-07T23:14:57.064770+00:00",
+    "gt_delta_s": 0.2,
+    "gt_class": "zen-beta",
+    "gt_title": "The AI Deal of the Century? | RealClearPolitics \u2014 Zen Browser",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-09T01:53:23.784132+00:00.png",
+    "ts": "2026-07-09T01:53:23.784132+00:00",
+    "gt_delta_s": 4.0,
+    "gt_class": "eu.betterbird.Betterbird",
+    "gt_title": "Inbox - handzelmatthew@gmail.com - Betterbird",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-09T20:42:56.627168+00:00.png",
+    "ts": "2026-07-09T20:42:56.627168+00:00",
+    "gt_delta_s": 0.2,
+    "gt_class": "zen-beta",
+    "gt_title": "Matt <> Jeff Ongoing Agenda - Google Docs \u2014 Zen Browser",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-11T18:09:18.996280+00:00.png",
+    "ts": "2026-07-11T18:09:18.996280+00:00",
+    "gt_delta_s": 3.1,
+    "gt_class": "obsidian",
+    "gt_title": "agentsteer-info - ramify - Obsidian 1.12.7",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-12T22:28:54.949077+00:00.png",
+    "ts": "2026-07-12T22:28:54.949077+00:00",
+    "gt_delta_s": 3.2,
+    "gt_class": "kitty",
+    "gt_title": "notetaker",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-13T18:34:26.044140+00:00.png",
+    "ts": "2026-07-13T18:34:26.044140+00:00",
+    "gt_delta_s": 3.6,
+    "gt_class": "chrome-calendar.google.com__-Default",
+    "gt_title": "Google Calendar - Week of July 13, 2026",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-14T21:20:48.453351+00:00.png",
+    "ts": "2026-07-14T21:20:48.453351+00:00",
+    "gt_delta_s": 2.4,
+    "gt_class": "Slack",
+    "gt_title": "Jeff Alstott (DM) - Constellation Institute - 3 new items - Slack",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-15T00:10:54.262228+00:00.png",
+    "ts": "2026-07-15T00:10:54.262228+00:00",
+    "gt_delta_s": 0.7,
+    "gt_class": "chrome-linear.app__-Default",
+    "gt_title": "RAM-43 Design how we technically evaluate candidates Jeff can't evaluate (Chris, Ram) \u2014 recruit an expert friend as interviewer",
+    "dims": [
+      3840,
+      3960
+    ],
+    "layout": "dual"
+  },
+  {
+    "frame": "2026-07-15T04:30:35.667337+00:00.png",
+    "ts": "2026-07-15T04:30:35.667337+00:00",
+    "gt_delta_s": 0.4,
+    "gt_class": "Slack",
+    "gt_title": "Jeff Alstott (DM) - Constellation Institute - 3 new items - Slack",
+    "dims": [
+      2880,
+      1800
+    ],
+    "layout": "single"
+  }
+]
