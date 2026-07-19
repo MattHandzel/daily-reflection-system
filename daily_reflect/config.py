@@ -81,7 +81,7 @@ class Config:
 
     # Ollama
     ollama_url: str = "http://localhost:11434/api/generate"
-    model: str = "gemma3:4b-it-qat"
+    model: str = "qwen3.5:4b"
     prompt_version: str = "v2"
     concurrency: int = 3
     request_timeout: int = 120
@@ -140,7 +140,7 @@ def load_config() -> Config:
             Path.home() / "Obsidian" / "Main" / "projects" / "daily-reflection-system" / "reflections",
         ),
         ollama_url=str(_get("ollama_url", "DAILY_REFLECT_OLLAMA_URL", "http://localhost:11434/api/generate")),
-        model=str(_get("model", "DAILY_REFLECT_MODEL", "gemma3:4b-it-qat")),
+        model=str(_get("model", "DAILY_REFLECT_MODEL", "qwen3.5:4b")),
         prompt_version=str(_get("prompt_version", "DAILY_REFLECT_PROMPT_VERSION", "v2")),
         concurrency=_get_int("concurrency", "DAILY_REFLECT_CONCURRENCY", 3),
         request_timeout=_get_int("request_timeout", "DAILY_REFLECT_REQUEST_TIMEOUT", 120),

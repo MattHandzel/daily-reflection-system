@@ -50,7 +50,7 @@ def day_bounds(date_str: str, cfg: Config) -> tuple[datetime, datetime]:
 
 
 def _parse_ts_from_name(name: str) -> datetime | None:
-    ts_str = name.replace(".thumb.jpg", "").replace(".png", "")
+    ts_str = name.replace(".thumb.jpg", "").replace(".png", "").replace(".webp", "")
     try:
         return datetime.fromisoformat(ts_str)
     except ValueError:
@@ -58,11 +58,14 @@ def _parse_ts_from_name(name: str) -> datetime | None:
 
 
 def collect_frames(date_str: str, cfg: Config) -> list[Frame]:
-    """Return frames within the day, one per timestamp, PNG-preferred.
+    """Return frames within the day, one per timestamp, best-resolution-first.
 
-    Full PNGs (2880x1800+) are legible where 720x450 thumbnails are not, but
-    older PNGs get pruned — so we fall back to the thumbnail when the PNG is
-    absent. Globs the target and next UTC date (the local day spans both).
+    Resolution ladder (MAT-1460 retention): the full PNG (2880x1800+) is best,
+    but full PNGs age out — MAT-1460's retention recompresses aged full frames to
+    ``.webp`` (~5x smaller, still far sharper than the 720x450 thumbnail). So a
+    timestamp resolves to full PNG > recompressed WebP > thumbnail. Both PNG and
+    WebP are full-resolution and legible (``is_png`` = "full-res frame"); only the
+    thumbnail is low-res. Globs the target and next UTC date (local day spans both).
     """
     start, end = day_bounds(date_str, cfg)
     date_obj = datetime.strptime(date_str, "%Y-%m-%d")
@@ -71,7 +74,7 @@ def collect_frames(date_str: str, cfg: Config) -> list[Frame]:
         (date_obj + timedelta(days=1)).strftime("%Y-%m-%d"),
     ]
 
-    # ts_str -> {"png": Path|None, "thumb": Path|None, "dt": datetime}
+    # ts_str -> {"png": Path|None, "webp": Path|None, "thumb": Path|None, "dt": datetime}
     by_ts: dict[str, dict] = {}
     for prefix in prefixes:
         for p in cfg.screen_dir.glob(f"{prefix}T*"):
@@ -80,22 +83,25 @@ def collect_frames(date_str: str, cfg: Config) -> list[Frame]:
                 kind, ts_str = "thumb", name[: -len(".thumb.jpg")]
             elif name.endswith(".png"):
                 kind, ts_str = "png", name[: -len(".png")]
+            elif name.endswith(".webp"):
+                kind, ts_str = "webp", name[: -len(".webp")]
             else:
                 continue
             dt = _parse_ts_from_name(name)
             if dt is None or not (start <= dt < end):
                 continue
-            slot = by_ts.setdefault(ts_str, {"png": None, "thumb": None, "dt": dt})
+            slot = by_ts.setdefault(ts_str, {"png": None, "webp": None, "thumb": None, "dt": dt})
             slot[kind] = p
 
     frames: list[Frame] = []
     for slot in by_ts.values():
-        if cfg.prefer_png and slot["png"] is not None:
-            frames.append(Frame(slot["dt"], slot["png"], True))
+        hi = slot["png"] or slot["webp"]  # full-res options, PNG preferred over WebP
+        if cfg.prefer_png and hi is not None:
+            frames.append(Frame(slot["dt"], hi, True))
         elif slot["thumb"] is not None:
             frames.append(Frame(slot["dt"], slot["thumb"], False))
-        elif slot["png"] is not None:
-            frames.append(Frame(slot["dt"], slot["png"], True))
+        elif hi is not None:
+            frames.append(Frame(slot["dt"], hi, True))
     frames.sort(key=lambda f: f.dt)
     return frames
 
