@@ -121,7 +121,9 @@ def _parse_response(stdout: str, model: str, prompt_version: str) -> Classificat
     if isinstance(resp, dict) and resp.get("error"):
         return Classification(UNCERTAIN, "", "unknown", "low", model, prompt_version,
                               error=f"ollama error: {str(resp['error'])[:120]}", retryable=True)
-    text = (resp.get("response") or "").strip()
+    # Prefer `response`; fall back to `thinking` for reasoning models that route
+    # the JSON there despite think=False (qwen3.5 / qwen3-vl do this at times).
+    text = (resp.get("response") or "").strip() or (resp.get("thinking") or "").strip()
     if text.startswith("```"):
         text = text.split("\n", 1)[1] if "\n" in text else text[3:]
         if text.endswith("```"):
@@ -222,6 +224,12 @@ def classify_frame(
         "images": [img_b64],
         "stream": False,
         "format": "json",
+        # Disable reasoning: qwen3.5 (the default) is a hybrid reasoning model and
+        # in think-mode it emits its JSON into the `thinking` field, leaving
+        # `response` empty — every frame would come back "uncertain". The eval
+        # harness (MAT-1461) sets this too. _parse_response also reads `thinking`
+        # as a belt-and-suspenders fallback for models that misroute anyway.
+        "think": False,
         "keep_alive": cfg.keep_alive,
         "options": {"temperature": 0.1},
     })
