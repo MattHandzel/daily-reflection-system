@@ -113,6 +113,14 @@ def _parse_response(stdout: str, model: str, prompt_version: str) -> Classificat
     except (json.JSONDecodeError, ValueError):
         return Classification(UNCERTAIN, "", "unknown", "low", model, prompt_version,
                               error="ollama envelope unparseable", retryable=True)
+    # Ollama returns HTTP 500 with a valid JSON body {"error": "..."} on model
+    # load failures / GPU OOM (curl -s exits 0, so this is NOT a transport error
+    # and NOT content). Treat it as a retryable *infrastructure* failure — never
+    # cache it, and surface it distinctly from real "uncertain" content so a run
+    # under GPU contention doesn't silently return all-Uncertain with no signal.
+    if isinstance(resp, dict) and resp.get("error"):
+        return Classification(UNCERTAIN, "", "unknown", "low", model, prompt_version,
+                              error=f"ollama error: {str(resp['error'])[:120]}", retryable=True)
     text = (resp.get("response") or "").strip()
     if text.startswith("```"):
         text = text.split("\n", 1)[1] if "\n" in text else text[3:]
@@ -141,6 +149,52 @@ def _parse_response(stdout: str, model: str, prompt_version: str) -> Classificat
         model=model,
         prompt_version=prompt_version,
     )
+
+
+def _ps_url(ollama_url: str) -> str:
+    """Derive the /api/ps endpoint from the configured /api/generate URL."""
+    base = ollama_url.rsplit("/api/", 1)[0] if "/api/" in ollama_url else ollama_url.rstrip("/")
+    return f"{base}/api/ps"
+
+
+def gpu_preflight(cfg: Config, tries: int = 3, backoff_seconds: float = 10.0) -> str | None:
+    """Check the shared GPU before a classification burst.
+
+    Queries ``/api/ps``. Only treats the GPU as *contended* when a model other
+    than ``cfg.model`` is resident AND that model's resident VRAM leaves little
+    headroom on the shared 12GB card (``cfg.gpu_free_headroom_gb``) — a small
+    model with plenty of room is not worth warning about. When contended, waits
+    with backoff up to ``tries`` times for it to free, then proceeds anyway.
+    Returns a human-readable warning string if still contended (for the run log /
+    reflection header), else None. Never raises — a probe failure skips the check.
+    """
+    import time
+    warning = None
+    for attempt in range(1, tries + 1):
+        try:
+            result = subprocess.run(
+                ["curl", "-s", "--max-time", "10", _ps_url(cfg.ollama_url)],
+                capture_output=True, text=True, timeout=15,
+            )
+            resident = json.loads(result.stdout or "{}").get("models", []) if result.returncode == 0 else []
+        except Exception:
+            return None  # can't probe -> don't block the run
+        others = [m for m in resident if m.get("name") and m.get("name") != cfg.model]
+        if not others:
+            return warning
+        other_vram_gb = sum(m.get("size_vram", 0) for m in others) / 1e9
+        free_gb = cfg.gpu_total_vram_gb - other_vram_gb
+        if free_gb >= cfg.gpu_free_headroom_gb:
+            # Other model(s) resident but plenty of room left — not contended.
+            return warning
+        names = ", ".join(m.get("name", "?") for m in others)
+        warning = (f"GPU contended: {names} holding {other_vram_gb:.1f}GB "
+                   f"({free_gb:.1f}GB free of {cfg.gpu_total_vram_gb:.0f}GB); may OOM under load")
+        if attempt < tries:
+            print(f"  [preflight] {warning} — waiting {backoff_seconds:.0f}s ({attempt}/{tries})...")
+            time.sleep(backoff_seconds)
+    print(f"  [preflight] WARNING: {warning} — proceeding anyway")
+    return warning
 
 
 def classify_frame(
@@ -227,7 +281,7 @@ def enrich_segments(
     cache_path: Path,
     progress: Callable[[int, int, str], None] | None = None,
     monitor_events: list[MonitorEvent] | None = None,
-) -> tuple[int, int]:
+) -> tuple[int, int, int]:
     """Label segments, grouping by task so each distinct task is classified once.
 
     Because the window log has far more events than there are screenshots, many
@@ -240,7 +294,10 @@ def enrich_segments(
     frame be cropped to the exact focused pane; absent, cropping falls back to
     the dimension-inference content heuristic in ``prepare_image``.
 
-    Returns ``(new_calls, cache_hits)``. Runs the VLM calls in a bounded pool.
+    Returns ``(new_calls, cache_hits, infra_failures)`` where ``infra_failures``
+    counts VLM calls that failed for infrastructure reasons (curl/timeout/Ollama
+    error envelope) — a caller can warn loudly when this dominates the run.
+    Runs the VLM calls in a bounded pool.
     """
     monitor_events = monitor_events or []
     cache = load_cache(cache_path, cfg)
@@ -289,6 +346,7 @@ def enrich_segments(
 
     # 4. classify queued groups in parallel
     new_calls = 0
+    infra_failures = 0
     if work:
         with ThreadPoolExecutor(max_workers=max(1, cfg.concurrency)) as pool:
             futures = {}
@@ -304,6 +362,8 @@ def enrich_segments(
                     _apply(seg, cls)
                 if not cls.error and not cls.retryable:
                     cache[_cache_key(cfg.model, cfg.prompt_version, frame.path.name)] = cls
+                elif cls.retryable:
+                    infra_failures += 1
                 new_calls += 1
                 done += 1
                 if progress and (done % 5 == 0 or done == len(work)):
@@ -312,7 +372,7 @@ def enrich_segments(
                     save_cache(cache_path, cache)
 
     save_cache(cache_path, cache)
-    return new_calls, hits
+    return new_calls, hits, infra_failures
 
 
 def _title_task(seg: Segment) -> str:

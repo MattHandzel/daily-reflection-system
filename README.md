@@ -49,7 +49,9 @@ Window log (10s) → segment day by task → enrich each task with VLM (focused-
    writes a standalone reflection file.
 
 Runs are incremental: classifications are cached by `(model, prompt_version,
-frame)` and a watermark skips already-processed data. Errors are never cached.
+frame)`, so a re-run only calls the VLM for tasks it hasn't classified yet.
+Errors (Ollama down / GPU OOM / timeout) are never cached, so they retry on the
+next run instead of poisoning the day with fake breaks.
 
 ## Output
 
@@ -125,7 +127,7 @@ below has a matching TOML key (without the `DAILY_REFLECT_` prefix, lowercased).
 | `DAILY_REFLECT_REFLECTIONS_DIR` | `~/Obsidian/Main/.../reflections` | Reflection output directory |
 | `DAILY_REFLECT_GCAL_CREDENTIALS` | `~/secrets/gcal_client_secret.json` | Google Calendar OAuth client |
 | `DAILY_REFLECT_GCAL_TOKEN` | `~/.local/share/universal-calendar-capture/token.json` | Google Calendar OAuth token |
-| `DAILY_REFLECT_CACHE_DIR` | `~/Projects/daily-reflection-system/cache` | Classification cache + watermark |
+| `DAILY_REFLECT_CACHE_DIR` | `~/Projects/daily-reflection-system/cache` | Classification cache |
 
 ## Performance
 
@@ -141,7 +143,7 @@ Measured on real data (RTX 3060, `gemma3:4b-it-qat`, concurrency 3):
 
 Grouping segments by task means ~40–60 VLM calls cover a whole day of hundreds
 of minute-level segments. Results cache to `cache/{date}.json` (keyed by model +
-prompt version); a watermark makes during-day re-runs incremental.
+prompt version + frame), so during-day re-runs only classify newly-seen tasks.
 
 ## Architecture
 
@@ -156,7 +158,7 @@ daily_reflect/
   timeline.py    — Display blocks, per-task totals, task-switch metrics
   calendar.py    — Google Calendar (incl. Life Scheduler) via gcal_helper
   reporter.py    — Reflection file + idempotent daily-note injection
-  main.py        — CLI orchestration + incremental watermark
+  main.py        — CLI orchestration + GPU preflight + failure-rate guard
 ```
 
 ## License

@@ -52,6 +52,7 @@ def _fmt_minutes(mins: float) -> str:
 def generate_reflection_file(
     date_str: str, segments: list[Segment], cfg: Config,
     target_deep_hours: float = DEEP_TARGET_HOURS,
+    warnings: list[str] | None = None,
 ) -> Path:
     """Write the standalone reflection markdown file. Returns its path."""
     cfg.reflections_dir.mkdir(parents=True, exist_ok=True)
@@ -68,6 +69,13 @@ def generate_reflection_file(
         "---", "tags:", "  - ai-generated", "  - reflection",
         f'created_date: "{date_str}"', "---", "",
         f"# Daily Reflection — {date_str}", "",
+    ]
+    if warnings:
+        lines.append("> [!warning] Run quality")
+        for w in warnings:
+            lines.append(f"> - {w}")
+        lines.append("")
+    lines += [
         f"**Active time:** {metrics['active_hours']}h · "
         f"**Deep work:** {deep:.1f}h / {target_deep_hours:.0f}h "
         f"{'MET' if deep >= target_deep_hours else 'NOT MET'} · "

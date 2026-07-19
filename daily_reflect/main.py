@@ -7,39 +7,24 @@ minute-or-better granularity); the VLM enriches each segment.
 
 import argparse
 import dataclasses
-import json
 import time
 from datetime import datetime, timedelta
 
 from .calendar import fetch_calendar_events
-from .classifier import enrich_segments
+from .classifier import enrich_segments, gpu_preflight
 from .collector import collect_frames, collect_monitor_events, collect_window_events, day_bounds
 from .config import load_config, Config
 from .reporter import generate_reflection_file, inject_into_daily_note
 from .segmenter import assign_frames, segment_day
 
+# Warn loudly when at least this fraction of VLM calls fail for infrastructure
+# reasons (Ollama error envelope / timeout) — a run above this is untrustworthy.
+FAILURE_WARN_THRESHOLD = 0.20
+
 
 def _effective_today(cfg: Config) -> datetime:
     now = datetime.now(cfg.tz)
     return now if now.hour >= cfg.day_boundary_hour else now - timedelta(days=1)
-
-
-def _read_watermark(cfg: Config, date_str: str) -> str | None:
-    p = cfg.watermark_dir / f"{date_str}.json"
-    if not p.exists():
-        return None
-    try:
-        return json.loads(p.read_text()).get("last_frame")
-    except Exception:
-        return None
-
-
-def _write_watermark(cfg: Config, date_str: str, last_frame: str, frame_count: int) -> None:
-    cfg.watermark_dir.mkdir(parents=True, exist_ok=True)
-    (cfg.watermark_dir / f"{date_str}.json").write_text(
-        json.dumps({"last_frame": last_frame, "frame_count": frame_count,
-                    "updated": datetime.now(cfg.tz).isoformat()}, indent=2)
-    )
 
 
 def run(date_str: str, cfg: Config, inject: bool, deep_target: float) -> int:
@@ -54,11 +39,6 @@ def run(date_str: str, cfg: Config, inject: bool, deep_target: float) -> int:
         return 1
     png_n = sum(1 for f in frames if f.is_png)
     print(f"  {len(frames)} frames ({png_n} full PNG, {len(frames) - png_n} thumb) · {len(events)} window events")
-
-    watermark = _read_watermark(cfg, date_str)
-    if watermark:
-        new_frames = [f for f in frames if f.dt.isoformat() > watermark]
-        print(f"  Watermark {watermark} → {len(new_frames)} new frames since last run")
 
     print("\n[2/6] Segmenting day by window focus...")
     _, day_end = day_bounds(date_str, cfg)
@@ -82,19 +62,38 @@ def run(date_str: str, cfg: Config, inject: bool, deep_target: float) -> int:
     else:
         print("  monitor_log: none for this day → dimension-inference crop fallback")
 
+    warnings: list[str] = []
+    gpu_warning = gpu_preflight(cfg)
+    if gpu_warning:
+        warnings.append(gpu_warning)
+
     def progress(done, total, note):
         print(f"  [{done}/{total}] {done / total * 100:.0f}% — {note}")
 
-    new_calls, hits = enrich_segments(segments, cfg, cache_path, progress=progress,
-                                      monitor_events=monitor_events)
+    new_calls, hits, infra_failures = enrich_segments(
+        segments, cfg, cache_path, progress=progress, monitor_events=monitor_events)
     print(f"  {new_calls} new classifications, {hits} from cache")
+
+    fail_rate = infra_failures / new_calls if new_calls else 0.0
+    if infra_failures:
+        msg = (f"{infra_failures}/{new_calls} classifications FAILED "
+               f"(Ollama error / timeout — {fail_rate:.0%}); those segments have no VLM signal")
+        if fail_rate >= FAILURE_WARN_THRESHOLD:
+            print("\n" + "!" * 72)
+            print(f"  CLASSIFICATION FAILURE: {msg}")
+            print("  This run is UNRELIABLE — check the GPU (/api/ps) and re-run.")
+            print("!" * 72)
+            warnings.append(msg + " — run is unreliable, re-run once the GPU is free")
+        else:
+            print(f"  NOTE: {msg}")
 
     print("\n[4/6] Fetching calendar...")
     cal_events = fetch_calendar_events(date_str, cfg)
     print(f"  {len(cal_events)} calendar events across {len(cfg.gcal_calendar_ids)} calendars")
 
     print("\n[5/6] Writing reflection...")
-    reflection_path = generate_reflection_file(date_str, segments, cfg, target_deep_hours=deep_target)
+    reflection_path = generate_reflection_file(date_str, segments, cfg,
+                                               target_deep_hours=deep_target, warnings=warnings)
     print(f"  {reflection_path}")
 
     print("\n[6/6] Daily note...")
@@ -104,11 +103,9 @@ def run(date_str: str, cfg: Config, inject: bool, deep_target: float) -> int:
     else:
         print("  skipped (--no-inject)")
 
-    if frames:
-        _write_watermark(cfg, date_str, frames[-1].dt.isoformat(), len(frames))
-
     print(f"\nDone in {time.time() - t0:.0f}s")
-    return 0
+    # Non-zero exit when classification largely failed so a cron/wrapper notices.
+    return 2 if fail_rate >= FAILURE_WARN_THRESHOLD else 0
 
 
 def main():

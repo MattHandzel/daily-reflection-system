@@ -2,6 +2,26 @@
 
 Newest first. Each entry: what happened + the fix, so the next agent doesn't repeat it.
 
+## 2026-07-19 — Ollama error envelope silently swallowed as "uncertain"
+
+**Mistake:** `classifier._parse_response` json-decoded the Ollama reply and read
+`resp["response"]`, but on a model-load failure / GPU OOM Ollama returns HTTP 500
+with a valid JSON body `{"error": "..."}` (and `curl -s` exits 0). That parsed
+fine, `response` was empty, and the frame fell through to a non-retryable
+`uncertain` — so a whole run under GPU contention came back 30/30 "Uncertain"
+with **zero signal that classification had failed**, and those results were
+cacheable/counted as real.
+
+**Fix:** Detect `resp.get("error")` explicitly → retryable infra failure (never
+cached). `enrich_segments` now returns an `infra_failures` count; `main.py` prints
+a LOUD banner + exits non-zero + writes a `> [!warning]` block into the reflection
+header when the failure rate exceeds 20% (a quiet NOTE below that). Added a
+`/api/ps` GPU preflight that backs off when a co-resident model leaves <4GB free
+on the shared 12GB card. Lesson: an HTTP client that doesn't use `-f` must
+inspect the response body for an error envelope — a 2xx-shaped parse is not
+success. Verify failure paths by *inducing* a failure (bogus model), not just the
+happy path.
+
 ## 2026-07-18 — monitor_log crop half-wired: signature threaded, call site not
 
 **Mistake:** The `monitor_log` exact-pane crop was added by threading a
