@@ -2,6 +2,23 @@
 
 Newest first. Each entry: what happened + the fix, so the next agent doesn't repeat it.
 
+## 2026-07-19 — Merged the eval-winner model without exercising it: qwen3.5 think-mode emptied `response`
+
+**Mistake:** Set the default model to `qwen3.5:4b` (MAT-1461 eval winner) and
+merged, but the first from-main verification produced 4.1h "Uncertain" and an
+empty cache. Cause: `qwen3.5` is a hybrid **reasoning** model — in think-mode it
+emits the JSON into the `thinking` field and leaves `response` empty, so every
+frame parsed as uncertain. The eval harness had set `"think": False` (and read
+`thinking` as a fallback); the classifier request omitted it. I caught it only
+because I inspected the category distribution, not just the exit code (the run
+exited 0 — the 26 empty-response frames were content-uncertain, below the 20%
+infra-failure banner).
+
+**Fix:** Add `"think": False` to the classify payload and fall back to the
+`thinking` field when `response` is empty. Lesson: swapping a model default is a
+behavior change — exercise it on real input and check the *output distribution*,
+not just that it runs. Mirror the request params the eval that picked it used.
+
 ## 2026-07-19 — Ollama error envelope silently swallowed as "uncertain"
 
 **Mistake:** `classifier._parse_response` json-decoded the Ollama reply and read
