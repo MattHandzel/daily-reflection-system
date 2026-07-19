@@ -1,65 +1,40 @@
-"""Deduplicate screenshots using perceptual hashing and sample at intervals."""
+"""Perceptual-hash utilities for collapsing near-identical frames.
 
-from datetime import datetime, timedelta
+In the inverted pipeline the window log drives segmentation, so full-day dedup
+is no longer on the critical path — but dedup is still useful for trimming
+redundant representative frames within a segment. A corrupt image is skipped
+rather than aborting the run (review finding #12).
+"""
+
 from pathlib import Path
 
 import imagehash
 from PIL import Image
 
 
-def compute_dhash(path: Path) -> imagehash.ImageHash:
-    """Compute dHash for a thumbnail image."""
-    img = Image.open(path)
-    return imagehash.dhash(img)
+def compute_dhash(path: Path) -> imagehash.ImageHash | None:
+    """dHash for an image; None if the file is unreadable/corrupt."""
+    try:
+        with Image.open(path) as img:
+            return imagehash.dhash(img)
+    except Exception:
+        return None
 
 
-def dedup_screenshots(
-    paths: list[Path], hamming_threshold: int = 10
-) -> list[Path]:
-    """Remove near-duplicate screenshots using dHash.
+def dedup_paths(paths: list[Path], hamming_threshold: int = 10) -> list[Path]:
+    """Drop consecutive near-duplicates (Hamming distance < threshold).
 
-    Two consecutive frames with Hamming distance < threshold are considered
-    duplicates; only the first is kept.
+    Unreadable frames are skipped. The first frame is always kept.
     """
     if not paths:
         return []
-
-    result = [paths[0]]
-    prev_hash = compute_dhash(paths[0])
-
-    for p in paths[1:]:
+    result: list[Path] = []
+    prev_hash = None
+    for p in paths:
         h = compute_dhash(p)
-        if abs(h - prev_hash) >= hamming_threshold:
+        if h is None:
+            continue
+        if prev_hash is None or abs(h - prev_hash) >= hamming_threshold:
             result.append(p)
             prev_hash = h
-
     return result
-
-
-def sample_at_interval(
-    paths: list[Path], interval_minutes: int = 5
-) -> list[Path]:
-    """Sample one screenshot per time interval from the deduplicated set."""
-    if not paths:
-        return []
-
-    interval = timedelta(minutes=interval_minutes)
-    result = [paths[0]]
-    last_ts = _parse_timestamp(paths[0])
-
-    for p in paths[1:]:
-        ts = _parse_timestamp(p)
-        if ts and last_ts and (ts - last_ts) >= interval:
-            result.append(p)
-            last_ts = ts
-
-    return result
-
-
-def _parse_timestamp(path: Path) -> datetime | None:
-    """Parse ISO timestamp from thumbnail filename."""
-    ts_str = path.name.replace(".thumb.jpg", "").replace(".png", "")
-    try:
-        return datetime.fromisoformat(ts_str)
-    except ValueError:
-        return None
